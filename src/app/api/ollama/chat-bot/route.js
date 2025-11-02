@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { createOllamaClient, OLLAMA_CONFIG } from '@/lib/ollama-config';
+import {NextResponse} from 'next/server';
+import {createOllamaClient, OLLAMA_CONFIG} from '@/lib/ollama-config';
 
 /**
  * ChatBot API Endpoint
@@ -13,7 +13,7 @@ export async function POST(request) {
     const { query, context, history = [] } = await request.json();
 
     // Validar que la consulta no esté vacía
-    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      if (!query || 'string' !== typeof query || 0 === query.trim().length) {
       return NextResponse.json(
         { 
           success: false,
@@ -24,7 +24,7 @@ export async function POST(request) {
     }
 
     // Limitar longitud de consulta
-    if (query.length > 1000) {
+      if (1000 < query.length) {
       return NextResponse.json(
         { 
           success: false,

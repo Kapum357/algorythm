@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import styles from "./page.module.css";
 import InteractiveMap from "@/components/InteractiveMap";
 
@@ -47,8 +47,8 @@ export default function ImpactDashboard() {
     // keep the selected zone in the impact calculation only
     
     // Estimar población afectada basándose en el nivel de riesgo
-    const multiplier = zone.level === 'high' ? 0.85 : 
-                      zone.level === 'medium' ? 0.50 : 0.20;
+      const multiplier = 'high' === zone.level ? 0.85 :
+          'medium' === zone.level ? 0.50 : 0.20;
     
     const affectedPopulation = Math.round(total * multiplier);
     const affectedChildren = Math.round(children * multiplier);
@@ -62,8 +62,8 @@ export default function ImpactDashboard() {
       children: affectedChildren,
       seniors: affectedSeniors,
       households: affectedHouseholds,
-      vulnerability: zone.level === 'high' ? 'CRÍTICA' : 
-                    zone.level === 'medium' ? 'MODERADA' : 'BAJA'
+        vulnerability: 'high' === zone.level ? 'CRÍTICA' :
+            'medium' === zone.level ? 'MODERADA' : 'BAJA'
     });
   };
 

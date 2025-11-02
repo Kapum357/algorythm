@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import {useEffect, useRef, useState} from "react";
 import styles from "./ChatBot.module.css";
 import TTSButton from "./TTSButton";
 
@@ -30,7 +30,9 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
   ];
 
   const sendMessage = async (messageText = input) => {
-    if (!messageText.trim()) return;
+      if (!messageText.trim()) {
+          return;
+      }
 
     const userMessage = {
       role: "user",
@@ -95,7 +97,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+      if ("Enter" === e.key && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -126,7 +128,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
             <div
               key={idx}
               className={`${styles.compactMessage} ${
-                msg.role === "user" ? styles.compactUser : styles.compactAssistant
+                  "user" === msg.role ? styles.compactUser : styles.compactAssistant
               }`}
             >
               <div className={styles.compactContent}>{msg.content}</div>
@@ -187,11 +189,11 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
             <div
               key={idx}
               className={`${styles.message} ${
-                msg.role === "user" ? styles.userMessage : styles.assistantMessage
+                  "user" === msg.role ? styles.userMessage : styles.assistantMessage
               } ${msg.isError ? styles.errorMessage : ""}`}
             >
               <div className={styles.messageAvatar}>
-                {msg.role === "user" ? "👤" : "🤖"}
+                  {"user" === msg.role ? "👤" : "🤖"}
               </div>
               <div className={styles.messageContent}>
                 <div className={styles.messageText}>{msg.content}</div>
@@ -202,7 +204,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
                       minute: "2-digit"
                     })}
                   </span>
-                  {msg.role === "assistant" && !msg.isError && (
+                    {"assistant" === msg.role && !msg.isError && (
                     <TTSButton text={msg.content} label="🔊" small />
                   )}
                 </div>
@@ -226,7 +228,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
           <div ref={messagesEndRef} />
         </div>
 
-        {messages.length <= 2 && (
+          {2 >= messages.length && (
           <div className={styles.quickActions}>
             <p className={styles.quickActionsLabel}>Acciones rápidas:</p>
             <div className={styles.quickActionButtons}>

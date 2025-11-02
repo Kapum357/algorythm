@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import webpush from 'web-push';
 
 // Configurar VAPID keys (deberían estar en variables de entorno)
@@ -8,8 +8,8 @@ const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
 const vapidEmail = process.env.VAPID_EMAIL || 'mailto:admin@dir-soacha.org';
 
 // Validar que las keys estén configuradas
-const isVapidConfigured = vapidPublicKey && vapidPrivateKey && 
-  vapidPublicKey.length > 50 && vapidPrivateKey.length > 20;
+const isVapidConfigured = vapidPublicKey && vapidPrivateKey &&
+    50 < vapidPublicKey.length && 20 < vapidPrivateKey.length;
 
 if (isVapidConfigured) {
   try {

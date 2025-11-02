@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import styles from "./VoiceAssistant.module.css";
 import TTSButton from "./TTSButton";
 
@@ -16,7 +16,9 @@ export default function VoiceAssistant({ compact = false }) {
   const [interimTranscript, setInterimTranscript] = useState("");
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+      if ("undefined" === typeof window) {
+          return;
+      }
     
     // Verificar soporte de Web Speech API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -65,7 +67,7 @@ export default function VoiceAssistant({ compact = false }) {
     recognition.onerror = (event) => {
       // Normalizar la clave de error (event.error puede ser string o un objeto)
       const rawErr = event?.error;
-      const errKey = typeof rawErr === "string"
+        const errKey = "string" === typeof rawErr
         ? rawErr
         : (rawErr && (rawErr.name || rawErr.message)) || String(rawErr);
 
@@ -85,7 +87,7 @@ export default function VoiceAssistant({ compact = false }) {
       setError(friendly);
 
       // Intento de reintento automático sólo para errores transitorios de red (una vez)
-      if (errKey === "network") {
+        if ("network" === errKey) {
         // Sólo reintentar si el navegador reporta estar online
         if (navigator.onLine) {
           console.log("🔁 Reintentando reconocimiento por error de red en 1.5s...");
@@ -111,7 +113,7 @@ export default function VoiceAssistant({ compact = false }) {
     return () => {
       // Al desmontar, detener el reconocimiento si está activo. Proteger con try/catch
       try {
-        if (recognitionRef.current && typeof recognitionRef.current.stop === 'function') {
+          if (recognitionRef.current && 'function' === typeof recognitionRef.current.stop) {
           recognitionRef.current.stop();
         }
       } catch (err) {
@@ -122,7 +124,9 @@ export default function VoiceAssistant({ compact = false }) {
   }, []);
 
   const startListening = () => {
-    if (!recognitionRef.current || isListening) return;
+      if (!recognitionRef.current || isListening) {
+          return;
+      }
     
     setTranscript("");
     setResponse("");

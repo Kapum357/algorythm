@@ -53,13 +53,6 @@ Este proyecto ahora incluye **capacidades de Inteligencia Artificial** mediante 
    - Visita: [http://localhost:3000/ai-demo](http://localhost:3000/ai-demo)
    - Prueba los 3 casos de uso principales de IA
 
-### 📚 Documentación Completa
-
-- **[README de Ollama](./README_OLLAMA.md)** - Visión general y características
-- **[Guía de Configuración](./docs/OLLAMA_SETUP.md)** - Setup paso a paso
-- **[Ejemplos de Código](./docs/OLLAMA_EXAMPLES.md)** - Casos de uso prácticos
-- **[Quick Start](./docs/QUICKSTART.md)** - Inicio rápido en 5 minutos
-
 ### 🛠️ Stack Tecnológico AI
 
 - **Ollama Cloud**: Modelos gpt-oss:120b-cloud y glm-4.6:cloud
@@ -117,14 +110,5 @@ DIR-Soacha ahora incluye un **sistema completo de notificaciones push** para env
 
 ### 📖 Documentación Completa
 
-- **[README de Push Notifications](./README_PUSH_NOTIFICATIONS.md)** - Guía completa del sistema
 - Arquitectura, API endpoints, integración con IA
 - Solución de problemas y mejores prácticas
-
----
-
-## �📞 Soporte
-
-Para preguntas sobre la integración de IA: consulta la [documentación](./docs/) o abre un issue en GitHub.
-
-Para notificaciones push: consulta [README_PUSH_NOTIFICATIONS.md](./README_PUSH_NOTIFICATIONS.md)

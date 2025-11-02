@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /* config options here */
@@ -5,9 +7,7 @@ const nextConfig = {
   
   // Headers para permitir Service Workers y CSP
   async headers() {
-    // usar NODE_ENV para detectar desarrollo/producción
-    const isDev = process.env.NODE_ENV !== 'production';
-    // Cabeceras permisivas para permitir todo el tráfico entrante
+      // Cabeceras permisivas para permitir tráfico entrante sin restricciones
     const permissiveCsp = "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; " +
       "script-src * 'unsafe-inline' 'unsafe-eval'; " +
       "style-src * 'unsafe-inline'; " +

@@ -4,7 +4,7 @@
  */
 
 /* eslint-disable no-undef */
-import { Ollama } from "ollama";
+import {Ollama} from "ollama";
 
 /**
  * Initialize Ollama client with cloud configuration
@@ -13,8 +13,8 @@ import { Ollama } from "ollama";
 export function createOllamaClient() {
   // Check if API key is configured
   const apiKey = process.env.OLLAMA_API_KEY;
-  
-  if (!apiKey || apiKey === 'your_api_key_here') {
+
+    if (!apiKey || 'your_api_key_here' === apiKey) {
     console.warn('⚠️  Ollama API key not configured. Please set OLLAMA_API_KEY in .env');
     console.warn('📝 Get your API key from: https://ollama.com/settings/keys');
   }
@@ -24,7 +24,7 @@ export function createOllamaClient() {
   };
 
   // Add authentication header if API key is available
-  if (apiKey && apiKey !== 'your_api_key_here') {
+    if (apiKey && 'your_api_key_here' !== apiKey) {
     config.headers = {
       Authorization: `Bearer ${apiKey}`,
     };
@@ -60,5 +60,5 @@ export const OLLAMA_CONFIG = {
  */
 export function isOllamaConfigured() {
   const apiKey = process.env.OLLAMA_API_KEY;
-  return apiKey && apiKey !== 'your_api_key_here';
+    return apiKey && 'your_api_key_here' !== apiKey;
 }

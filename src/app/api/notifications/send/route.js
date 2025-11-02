@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-import { NextResponse } from 'next/server';
+import {NextResponse} from 'next/server';
 import webpush from 'web-push';
-import { getSubscriptions } from '../subscribe/route';
+import {getSubscriptions} from '../subscribe/route';
 
 // Configurar VAPID keys
 const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
@@ -31,7 +31,7 @@ export async function POST(request) {
     // Obtener todas las suscripciones activas
     const subscriptions = getSubscriptions();
 
-    if (subscriptions.length === 0) {
+      if (0 === subscriptions.length) {
       return NextResponse.json({
         success: true,
         message: 'No hay suscriptores registrados',
@@ -96,7 +96,7 @@ export async function GET() {
     return NextResponse.json({
       subscribersCount: subscriptions.length,
       configured: !!(vapidPublicKey && vapidPrivateKey),
-      message: subscriptions.length === 0 
+        message: 0 === subscriptions.length
         ? 'No hay suscriptores. Activa las notificaciones desde /alerts'
         : `${subscriptions.length} suscriptor(es) registrado(s)`
     });

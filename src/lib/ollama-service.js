@@ -3,9 +3,9 @@
  * Provides AI-powered analysis for climate resilience and risk assessment
  */
 
-import { createOllamaClient, OLLAMA_CONFIG } from './ollama-config';
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import {createOllamaClient, OLLAMA_CONFIG} from './ollama-config';
+import {z} from 'zod';
+import {zodToJsonSchema} from 'zod-to-json-schema';
 
 /**
  * Process voice queries with conversational AI responses
@@ -476,8 +476,8 @@ export async function conductClimateResearch(researchQuery) {
   // Step 1: Search for relevant information
   const searchQuery = `${topic} ${location} Colombia clima cambio climático 2025`;
   const searchResults = await performWebSearch(searchQuery, 3);
-  
-  if (!searchResults.success || searchResults.results.length === 0) {
+
+    if (!searchResults.success || 0 === searchResults.results.length) {
     throw new Error('No se encontraron resultados de búsqueda');
   }
   

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {useState} from "react";
 import styles from "./page.module.css";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import ChatBot from "@/components/ChatBot";
@@ -21,13 +21,13 @@ export default function AssistantPage() {
 
         <section className={styles.modeSwitcher}>
           <button
-            className={`${styles.modeBtn} ${mode === "chat" ? styles.active : ""}`}
+              className={`${styles.modeBtn} ${"chat" === mode ? styles.active : ""}`}
             onClick={() => setMode("chat")}
           >
             💬 Chat de Texto
           </button>
           <button
-            className={`${styles.modeBtn} ${mode === "voice" ? styles.active : ""}`}
+              className={`${styles.modeBtn} ${"voice" === mode ? styles.active : ""}`}
             onClick={() => setMode("voice")}
           >
             🎤 Asistente de Voz
@@ -35,7 +35,7 @@ export default function AssistantPage() {
         </section>
 
         <section className={styles.assistantSection}>
-          {mode === "chat" ? (
+            {"chat" === mode ? (
             <div className={styles.modeContent}>
               <div className={styles.modeInfo}>
                 <h3 className="text-h6">💬 Chat Conversacional</h3>

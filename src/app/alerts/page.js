@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import styles from "./page.module.css";
 import TTSButton from "../../components/TTSButton";
 import PushNotifications from "../../components/PushNotifications";
 
 function severityColor(sev) {
-  if (sev === "high") return "var(--color-error)";      // #C8102E (Cruz Roja red)
-  if (sev === "medium") return "var(--color-alert)";    // #FFD700 (yellow)
+    if ("high" === sev) {
+        return "var(--color-error)";
+    }      // #C8102E (Cruz Roja red)
+    if ("medium" === sev) {
+        return "var(--color-alert)";
+    }    // #FFD700 (yellow)
   return "var(--color-success)";                        // #2E7D32 (green)
 }
 
@@ -19,7 +23,7 @@ function _LineChart({ points, color = "var(--color-secondary)" }) {
   const xs = points.map((_, i) => (i / (points.length - 1)) * (width - padding * 2) + padding);
   const ys = points.map((v) => height - padding - (v / Math.max(...points)) * (height - padding * 2));
   const d = xs
-    .map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`)
+      .map((x, i) => `${0 === i ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`)
     .join(" ");
   return (
     <svg className={styles.chart} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="forecast chart">
@@ -57,23 +61,23 @@ export default function AlertsPage() {
       const next = [newAlert, ...prev];
 
       // Compute counts
-      const high = next.filter((a) => a.severity === "high").length;
-      const medium = next.filter((a) => a.severity === "medium").length;
-      const low = next.filter((a) => a.severity === "low").length;
+        const high = next.filter((a) => "high" === a.severity).length;
+        const medium = next.filter((a) => "medium" === a.severity).length;
+        const low = next.filter((a) => "low" === a.severity).length;
       const combined = high + medium;
 
       // Threshold logic (notify once per threshold)
-      if (!notified.high && high >= 5) {
+        if (!notified.high && 5 <= high) {
         sendPushNotification("high");
         setNotified((s) => ({ ...s, high: true }));
-      } else if (!notified.medium && medium >= 5) {
+        } else if (!notified.medium && 5 <= medium) {
         sendPushNotification("medium");
         setNotified((s) => ({ ...s, medium: true }));
-      } else if (!notified.combined && combined >= 5) {
+        } else if (!notified.combined && 5 <= combined) {
         // If combined red+yellow reaches threshold but individual counts didn't, send a medium alert
         sendPushNotification("medium");
         setNotified((s) => ({ ...s, combined: true }));
-      } else if (!notified.low && low >= 10) {
+        } else if (!notified.low && 10 <= low) {
         sendPushNotification("low");
         setNotified((s) => ({ ...s, low: true }));
       }
@@ -116,9 +120,9 @@ export default function AlertsPage() {
   }
 
   const counts = useMemo(() => {
-    const high = alerts.filter((a) => a.severity === "high").length;
-    const medium = alerts.filter((a) => a.severity === "medium").length;
-    const low = alerts.filter((a) => a.severity === "low").length;
+      const high = alerts.filter((a) => "high" === a.severity).length;
+      const medium = alerts.filter((a) => "medium" === a.severity).length;
+      const low = alerts.filter((a) => "low" === a.severity).length;
     return { high, medium, low };
   }, [alerts]);
 
@@ -127,7 +131,9 @@ export default function AlertsPage() {
   // Load the lottie-player web component (LottieFiles player) dynamically on client
   const [lottieReady, setLottieReady] = useState(false);
   useEffect(() => {
-    if (typeof window === "undefined") return;
+      if ("undefined" === typeof window) {
+          return;
+      }
     // If already defined, mark ready
     if (window.customElements && window.customElements.get && window.customElements.get("lottie-player")) {
       setLottieReady(true);
@@ -265,10 +271,13 @@ export default function AlertsPage() {
                 onClick={() => addFloodReport(tile.key)}
                 aria-label={`Reportar inundación ${tile.label}`}
                 className={styles.reportBtn}
-                style={{ background: tile.color, color: tile.key === "medium" ? "var(--color-text-primary)" : "var(--color-blanco)" }}
+                style={{
+                    background: tile.color,
+                    color: "medium" === tile.key ? "var(--color-text-primary)" : "var(--color-blanco)"
+                }}
               >
                 <div style={{ fontSize: 36, marginBottom: 8 }}>
-                  {tile.key === "high" ? (
+                    {"high" === tile.key ? (
                     <div className={styles.lottieWrap}>
                       {lottieReady ? (
                         <lottie-player
@@ -286,7 +295,7 @@ export default function AlertsPage() {
                         </div>
                       )}
                     </div>
-                  ) : tile.key === "medium" ? (
+                    ) : "medium" === tile.key ? (
                     <div className={styles.lottieWrap}>
                       {lottieReady ? (
                         <lottie-player
@@ -323,7 +332,8 @@ export default function AlertsPage() {
 
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontWeight: 800 }}>Reportar</div>
-                  <div style={{ fontWeight: 900 }}>{tile.key === "high" ? "Alto" : tile.key === "medium" ? "Medio" : "Bajo"}</div>
+                    <div
+                        style={{fontWeight: 900}}>{"high" === tile.key ? "Alto" : "medium" === tile.key ? "Medio" : "Bajo"}</div>
                 </div>
               </button>
             </div>

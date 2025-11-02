@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import styles from "./page.module.css";
 import InteractiveMap from "@/components/InteractiveMap";
 
@@ -89,7 +89,7 @@ export default function CommunityReports() {
       "Árbol caído": "🌳 Árbol caído"
     };
     return labels[type] || type;
-  }
+  };
 
   return (
     <div className={styles.layout}>
@@ -98,11 +98,11 @@ export default function CommunityReports() {
         <h2 className="text-h6">Reportes Recientes ({reports.length})</h2>
         <div className={styles.stats}>
           <div className={styles.statBox}>
-            <strong>{reports.filter(r => r.status === "pending").length}</strong>
+              <strong>{reports.filter(r => "pending" === r.status).length}</strong>
             <span>Pendientes</span>
           </div>
           <div className={styles.statBox}>
-            <strong>{reports.filter(r => r.status === "resolved").length}</strong>
+              <strong>{reports.filter(r => "resolved" === r.status).length}</strong>
             <span>Resueltos</span>
           </div>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import {useEffect, useRef} from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
 import styles from "./page.module.css";
 import VoiceAssistant from "@/components/VoiceAssistant";
 // InteractiveMap import removed (not used) to satisfy linter
@@ -30,14 +30,18 @@ export default function DashboardPrincipal() {
     let ro = null;
     try {
       ro = new ResizeObserver(resize);
-      if (cardRef.current) ro.observe(cardRef.current);
+        if (cardRef.current) {
+            ro.observe(cardRef.current);
+        }
     } catch {
       // ResizeObserver may not be available in old browsers; window resize covers most cases
     }
 
     return () => {
       window.removeEventListener("resize", resize);
-      if (ro) ro.disconnect();
+        if (ro) {
+            ro.disconnect();
+        }
     };
   }, []);
 
@@ -50,12 +54,15 @@ export default function DashboardPrincipal() {
           <small>Soacha</small>
         </div>
         <nav className={styles.menu} aria-label="Secciones">
-          <Link href="/dashboard" className={pathname === "/dashboard" ? styles.activeLink : undefined}>🏠 Inicio</Link>
-          <Link href="/alerts" className={pathname === "/alerts" ? styles.activeLink : undefined}>🔔 Alertas</Link>
-          <Link href="/reports" className={pathname === "/reports" ? styles.activeLink : undefined}>🗂️ Reportes</Link>
-          <Link href="/impact" className={pathname === "/impact" ? styles.activeLink : undefined}>📊 Análisis</Link>
-          <Link href="/communities" className={pathname === "/communities" ? styles.activeLink : undefined}>👥 Comunidades</Link>
-          <Link href="/assistant" className={pathname === "/assistant" ? styles.activeLink : undefined}>🎤 Asistente</Link>
+            <Link href="/dashboard" className={"/dashboard" === pathname ? styles.activeLink : undefined}>🏠
+                Inicio</Link>
+            <Link href="/alerts" className={"/alerts" === pathname ? styles.activeLink : undefined}>🔔 Alertas</Link>
+            <Link href="/reports" className={"/reports" === pathname ? styles.activeLink : undefined}>🗂️ Reportes</Link>
+            <Link href="/impact" className={"/impact" === pathname ? styles.activeLink : undefined}>📊 Análisis</Link>
+            <Link href="/communities" className={"/communities" === pathname ? styles.activeLink : undefined}>👥
+                Comunidades</Link>
+            <Link href="/assistant" className={"/assistant" === pathname ? styles.activeLink : undefined}>🎤
+                Asistente</Link>
         </nav>
         
         <div className={styles.voiceWidget}>

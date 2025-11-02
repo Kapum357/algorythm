@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import {useState} from 'react';
 import styles from './AIAnalysisPanel.module.css';
 
 export default function AIAnalysisPanel({ zone, community, onClose }) {
@@ -49,8 +49,8 @@ export default function AIAnalysisPanel({ zone, community, onClose }) {
           <h3 className="text-h5">{zone.name}</h3>
           <p className="text-body2">{zone.description}</p>
           <div className={styles.badge} data-level={zone.level}>
-            {zone.level === 'high' ? '🔴 Riesgo Alto' : 
-             zone.level === 'medium' ? '🟠 Riesgo Medio' : '🟢 Riesgo Bajo'}
+              {'high' === zone.level ? '🔴 Riesgo Alto' :
+                  'medium' === zone.level ? '🟠 Riesgo Medio' : '🟢 Riesgo Bajo'}
           </div>
           {community && (
             <p className="text-caption" style={{ marginTop: 8 }}>
@@ -106,7 +106,7 @@ export default function AIAnalysisPanel({ zone, community, onClose }) {
 
           {analysis && !loading && (
             <div className={styles.results}>
-              {typeof analysis === 'string' ? (
+                {'string' === typeof analysis ? (
                 <div className={styles.resultSection}>
                   <pre className={styles.analysisText}>{analysis}</pre>
                 </div>

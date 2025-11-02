@@ -33,7 +33,9 @@ export async function POST(request) {
     // Pass through status and content-type; stream body
     const headers = new Headers();
     const ct = upstream.headers.get('content-type');
-    if (ct) headers.set('content-type', ct);
+      if (ct) {
+          headers.set('content-type', ct);
+      }
     headers.set('cache-control', 'no-store');
 
     return new Response(upstream.body, {

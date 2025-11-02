@@ -209,7 +209,7 @@
 }
 
 .analysisText {
-  font-family: var(--font-family);
+    font-family: 'Nunito Sans', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.7;
   white-space: pre-wrap;

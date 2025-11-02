@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import styles from "./PushNotifications.module.css";
 
 export default function PushNotifications() {
@@ -11,7 +11,7 @@ export default function PushNotifications() {
   const [registration, setRegistration] = useState(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      if ("undefined" === typeof window || !("serviceWorker" in navigator)) {
       return;
     }
 
@@ -72,7 +72,7 @@ export default function PushNotifications() {
       const permissionResult = await Notification.requestPermission();
       setPermission(permissionResult);
 
-      if (permissionResult !== "granted") {
+        if ("granted" !== permissionResult) {
         throw new Error("Permiso de notificaciones denegado");
       }
 
@@ -155,8 +155,8 @@ export default function PushNotifications() {
       
       // Mensajes de error más específicos
       let errorMessage = error.message;
-      
-      if (error.name === "AbortError" || errorMessage.includes("push service error")) {
+
+        if ("AbortError" === error.name || errorMessage.includes("push service error")) {
         errorMessage = "❌ Error del servicio push.\n\n" +
                       "Soluciones:\n" +
                       "1. Verifica que las VAPID keys estén en .env\n" +
@@ -164,7 +164,7 @@ export default function PushNotifications() {
                       "3. Limpia el cache del navegador (Ctrl+Shift+Del)\n" +
                       "4. En DevTools > Application > Service Workers > Unregister\n" +
                       "5. Recarga la página (Ctrl+Shift+R)";
-      } else if (error.name === "NotAllowedError") {
+        } else if ("NotAllowedError" === error.name) {
         errorMessage = "❌ Permisos de notificación bloqueados.\n\n" +
                       "Ve a Configuración del sitio > Notificaciones > Permitir";
       } else if (errorMessage.includes("VAPID")) {
@@ -226,7 +226,7 @@ export default function PushNotifications() {
   };
 
   // Si el navegador no soporta notificaciones
-  if (typeof window !== "undefined" && !("Notification" in window)) {
+    if ("undefined" !== typeof window && !("Notification" in window)) {
     return (
       <div className={styles.container}>
         <div className={styles.card}>
@@ -255,7 +255,7 @@ export default function PushNotifications() {
             : "Activa las notificaciones para recibir alertas de inundaciones y eventos meteorológicos."}
         </p>
 
-        {permission === "denied" && (
+          {"denied" === permission && (
           <div className={styles.warning}>
             <strong>⚠️ Permisos bloqueados</strong>
             <p className="text-caption">
@@ -274,7 +274,7 @@ export default function PushNotifications() {
           {!isSubscribed ? (
             <button
               onClick={subscribeToPush}
-              disabled={loading || permission === "denied"}
+              disabled={loading || "denied" === permission}
               className={styles.primaryBtn}
             >
               {loading ? "Activando..." : "🔔 Activar Notificaciones"}

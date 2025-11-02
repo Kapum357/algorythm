@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import styles from './InteractiveMap.module.css';
 import AIAnalysisPanel from './AIAnalysisPanel';
+import 'leaflet/dist/leaflet.css';
 
 export default function InteractiveMap({ 
   center = [4.5850, -74.2310], 
@@ -47,7 +48,11 @@ export default function InteractiveMap({
 
   // Inicializar mapa
   useEffect(() => {
-    if (typeof window === 'undefined' || !mapRef.current || mapInstance.current) return;
+      const isServer = !(globalThis && globalThis.window);
+      if (isServer || !mapRef.current || mapInstance.current) {
+          return () => {
+          };
+      }
 
     // Cargar Leaflet dinámicamente (solo en cliente)
     const initMap = async () => {
@@ -60,6 +65,21 @@ export default function InteractiveMap({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
+
+        // Si por HMR o remount quedó una instancia previa ligada al contenedor, limpiarla
+        try {
+            if (mapRef.current && mapRef.current._leaflet_id) {
+                // Eliminar nodos hijos y clases que Leaflet dejó para permitir una nueva inicialización
+                mapRef.current._leaflet_id = null;
+                mapRef.current.classList.remove && mapRef.current.classList.remove('leaflet-container');
+                while (mapRef.current.firstChild) {
+                    mapRef.current.removeChild(mapRef.current.firstChild);
+                }
+            }
+        } catch {
+            // Silenciar errores de limpieza, proceder a crear el mapa
+            console.warn('Limpieza previa del contenedor Leaflet falló');
+        }
 
       const map = L.map(mapRef.current).setView(center, zoom);
 
@@ -79,12 +99,24 @@ export default function InteractiveMap({
         mapInstance.current.remove();
         mapInstance.current = null;
       }
+
+        // Asegurar que el contenedor no mantenga el id interno de Leaflet
+        try {
+            if (mapRef.current && mapRef.current._leaflet_id) {
+                mapRef.current._leaflet_id = null;
+            }
+        } catch {
+            // noop
+        }
     };
   }, [center, zoom]);
 
   // Agregar capas cuando los datos estén disponibles
   useEffect(() => {
-    if (!mapInstance.current || !geodata || typeof window === 'undefined') return;
+      const isServer = !(globalThis && globalThis.window);
+      if (!mapInstance.current || !geodata || isServer) {
+          return;
+      }
 
     const updateLayers = async () => {
       const L = (await import('leaflet')).default;
@@ -93,13 +125,13 @@ export default function InteractiveMap({
       // Limpiar capas anteriores (capas y controles)
       Object.values(layersRef.current).forEach(layer => {
         const removeItem = (l) => {
-          if (!l) return;
+            if (!l) {
+                return;
+            }
           try {
-            // Intentar como capa
             map.removeLayer(l);
           } catch {
-            // Si es un control u otro, intentar .remove()
-            if (typeof l.remove === 'function') {
+              if (l && l.remove instanceof Function) {
               l.remove();
             }
           }
@@ -114,14 +146,32 @@ export default function InteractiveMap({
       layersRef.current = {};
 
       // Soporte para GeoJSON estándar (FeatureCollection)
-      if (geodata.type === 'FeatureCollection' && Array.isArray(geodata.features)) {
+        if (Array.isArray(geodata.features) && String(geodata.type || '').toLowerCase().includes('featurecollection')) {
         if (activeLayers.floodRisk) {
           const riskColor = (nivel) => {
             const v = String(nivel || '').toLowerCase();
-            if (v.includes('alta')) return '#d32f2f';
-            if (v.includes('media')) return '#ff9800';
+              if (v.includes('alta')) {
+                  return '#d32f2f';
+              }
+              if (v.includes('media')) {
+                  return '#ff9800';
+              }
             return '#4caf50';
           };
+
+            const riskLevelKey = (nivel) => {
+                const v = String(nivel || '').toLowerCase();
+                if (v.includes('alta')) {
+                    return 'high';
+                }
+                if (v.includes('media')) {
+                    return 'medium';
+                }
+                if (v.includes('baja')) {
+                    return 'low';
+                }
+                return 'unknown';
+            };
 
           const gj = L.geoJSON(geodata, {
             style: (feature) => ({
@@ -133,19 +183,62 @@ export default function InteractiveMap({
               const barrio = feature?.properties?.Barrio || 'Zona';
               const nivel = feature?.properties?.Nivel_Riesgo || 'N/A';
               const area = feature?.properties?.area_m2;
-              layer.bindPopup(`
+
+                const popupBody = `
                 <div class="${styles.popup}">
                   <h3>🌊 ${barrio}</h3>
                   <p><strong>Nivel de riesgo:</strong> ${nivel}</p>
                   ${area ? `<p><strong>Área:</strong> ${Number(area).toLocaleString()} m²</p>` : ''}
+                  ${enableAI ? '<button class="ai-analyze-btn">🤖 Analizar con IA</button>' : ''}
                 </div>
-              `);
+              `;
+
+                layer.bindPopup(popupBody);
+
+                layer.on('click', () => {
+                    const bounds = layer.getBounds?.();
+                    const center = bounds?.getCenter?.();
+                    const zoneObj = {
+                        id: feature.id || `${barrio}`,
+                        name: barrio,
+                        level: riskLevelKey(nivel),
+                        description: `Sector ${barrio} con nivel de riesgo ${nivel}.`,
+                        center: center ? [center.lat, center.lng] : undefined,
+                    };
+                    if (onZoneClick) {
+                        onZoneClick(zoneObj);
+                    }
+                });
+
+                if (enableAI) {
+                    layer.on('popupopen', () => {
+                        const btn = document.querySelector('.ai-analyze-btn');
+                        if (btn) {
+                            btn.onclick = (e) => {
+                                e.stopPropagation();
+                                const bounds = layer.getBounds?.();
+                                const center = bounds?.getCenter?.();
+                                const zoneObj = {
+                                    id: feature.id || `${barrio}`,
+                                    name: barrio,
+                                    level: riskLevelKey(nivel),
+                                    description: `Sector ${barrio} con nivel de riesgo ${nivel}.`,
+                                    center: center ? [center.lat, center.lng] : undefined,
+                                };
+                                setSelectedZone(zoneObj);
+                                setSelectedCommunity(null);
+                                setShowAIPanel(true);
+                                map.closePopup();
+                            };
+                        }
+                    });
+                }
             }
           }).addTo(map);
 
           layersRef.current.floodRisk = gj;
 
-          // Leyenda simple de niveles de riesgo
+            // Leyenda simple de niveles de riesgo (contenido sin comparaciones directas)
           const legend = L.control({ position: 'bottomright' });
           legend.onAdd = function() {
             const div = L.DomUtil.create('div', 'leaflet-control leaflet-bar');
@@ -154,18 +247,18 @@ export default function InteractiveMap({
             div.style.borderRadius = '8px';
             div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
             div.innerHTML = `
-              <div style="font: 600 12px/1.2 var(--font-family); margin-bottom: 6px;">Riesgo de Inundación</div>
+              <div style="font: 600 12px/1.2 system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; margin-bottom: 6px;">Riesgo de Inundación</div>
               <div style="display:flex; align-items:center; gap:6px; margin:4px 0;">
                 <span style="display:inline-block; width:12px; height:12px; background:#d32f2f; border-radius:2px;"></span>
-                <span style="font: 12px var(--font-family);">Alta</span>
+                <span style="font: 12px system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;">Alta</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px; margin:4px 0;">
                 <span style="display:inline-block; width:12px; height:12px; background:#ff9800; border-radius:2px;"></span>
-                <span style="font: 12px var(--font-family);">Media</span>
+                <span style="font: 12px system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;">Media</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px; margin:4px 0;">
                 <span style="display:inline-block; width:12px; height:12px; background:#4caf50; border-radius:2px;"></span>
-                <span style="font: 12px var(--font-family);">Baja</span>
+                <span style="font: 12px system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;">Baja</span>
               </div>
             `;
             return div;
@@ -205,28 +298,32 @@ export default function InteractiveMap({
             </div>
           `);
 
-          if (!layersRef.current.communities) layersRef.current.communities = [];
+            if (!layersRef.current.communities) {
+                layersRef.current.communities = [];
+            }
           layersRef.current.communities.push(polygon);
         });
       }
 
       // Capa de zonas de riesgo de inundación
       if (activeLayers.floodRisk && geodata.flood_risk_zones) {
+          const colorMap = {high: '#d32f2f', medium: '#ff9800'};
+          const levelTextMap = {high: '🔴 Alto', medium: '🟠 Medio'};
+
         geodata.flood_risk_zones.forEach(zone => {
-          const color = zone.level === 'high' ? '#d32f2f' :
-                       zone.level === 'medium' ? '#ff9800' : '#4caf50';
-          
+            const color = colorMap[zone.level] || '#4caf50';
+
           const polygon = L.polygon(zone.coordinates, {
             color: color,
             weight: 2,
             fillOpacity: 0.3
           }).addTo(map);
 
+            const label = levelTextMap[zone.level] || '🟢 Bajo';
           const popupContent = `
             <div class="${styles.popup}">
               <h3>🌊 ${zone.name}</h3>
-              <p><strong>Nivel:</strong> ${zone.level === 'high' ? '🔴 Alto' : 
-                                          zone.level === 'medium' ? '🟠 Medio' : '🟢 Bajo'}</p>
+              <p><strong>Nivel:</strong> ${label}</p>
               <p>${zone.description}</p>
               ${enableAI ? '<button class="ai-analyze-btn" data-zone-id="' + zone.id + '">🤖 Analizar con IA</button>' : ''}
             </div>
@@ -235,21 +332,20 @@ export default function InteractiveMap({
           polygon.bindPopup(popupContent);
 
           polygon.on('click', () => {
-            if (onZoneClick) onZoneClick(zone);
+              if (onZoneClick) {
+                  onZoneClick(zone);
+              }
           });
 
-          // Agregar listener para el botón de IA
           if (enableAI) {
             polygon.on('popupopen', () => {
               const btn = document.querySelector('.ai-analyze-btn');
               if (btn) {
                 btn.onclick = (e) => {
                   e.stopPropagation();
-                  // Encontrar comunidad asociada si existe
                   let community = null;
                   if (geodata.communities) {
                     Object.values(geodata.communities).forEach(comm => {
-                      // Verificar si la zona está dentro o cerca de la comunidad
                       community = comm;
                     });
                   }
@@ -262,13 +358,16 @@ export default function InteractiveMap({
             });
           }
 
-          if (!layersRef.current.floodRisk) layersRef.current.floodRisk = [];
+            if (!layersRef.current.floodRisk) {
+                layersRef.current.floodRisk = [];
+            }
           layersRef.current.floodRisk.push(polygon);
         });
       }
 
       // Capa de amenazas
       if (activeLayers.threats && geodata.threat_points) {
+          const sevLabel = (sev) => ({critical: '🔴 Crítico', high: '🟠 Alto'}[sev] || '🟡 Medio');
         geodata.threat_points.forEach(threat => {
           const icon = L.divIcon({
             className: styles.markerIcon,
@@ -282,13 +381,14 @@ export default function InteractiveMap({
             <div class="${styles.popup}">
               <h3>⚠️ ${threat.name}</h3>
               <p><strong>Tipo:</strong> ${getThreatTypeLabel(threat.type)}</p>
-              <p><strong>Severidad:</strong> ${threat.severity === 'critical' ? '🔴 Crítico' :
-                                               threat.severity === 'high' ? '🟠 Alto' : '🟡 Medio'}</p>
+              <p><strong>Severidad:</strong> ${sevLabel(threat.severity)}</p>
               <p>${threat.description}</p>
             </div>
           `);
 
-          if (!layersRef.current.threats) layersRef.current.threats = [];
+            if (!layersRef.current.threats) {
+                layersRef.current.threats = [];
+            }
           layersRef.current.threats.push(marker);
         });
       }
@@ -313,14 +413,16 @@ export default function InteractiveMap({
             </div>
           `);
 
-          if (!layersRef.current.capacities) layersRef.current.capacities = [];
+            if (!layersRef.current.capacities) {
+                layersRef.current.capacities = [];
+            }
           layersRef.current.capacities.push(marker);
         });
       }
 
       // Infraestructura crítica (ríos)
       geodata.critical_infrastructure && geodata.critical_infrastructure.forEach(infra => {
-        if (infra.type === 'water' && infra.path) {
+          if (String(infra.type || '').toLowerCase().includes('water') && infra.path) {
           const polyline = L.polyline(infra.path, {
             color: '#1976d2',
             weight: 3,
@@ -334,14 +436,16 @@ export default function InteractiveMap({
             </div>
           `);
 
-          if (!layersRef.current.infrastructure) layersRef.current.infrastructure = [];
+              if (!layersRef.current.infrastructure) {
+                  layersRef.current.infrastructure = [];
+              }
           layersRef.current.infrastructure.push(polyline);
         }
       });
     };
 
     updateLayers();
-  }, [geodata, activeLayers, onZoneClick]);
+  }, [geodata, activeLayers, onZoneClick, enableAI]);
 
   if (isLoading) {
     return (
@@ -353,13 +457,7 @@ export default function InteractiveMap({
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossOrigin=""
-      />
-      <div 
+        <div
         ref={mapRef} 
         className={styles.map}
         style={{ height, width: '100%' }}
@@ -382,31 +480,36 @@ export default function InteractiveMap({
 
 // Helpers
 function getThreatTypeLabel(type) {
-  const labels = {
-    insecurity: 'Inseguridad',
-    sewage: 'Alcantarillado',
-    waste: 'Residuos Sólidos',
-    contamination: 'Contaminación'
+    const map = {
+        flood: 'Inundación',
+        landslide: 'Mov. en masa',
+        electrical: 'Riesgo eléctrico',
+        sanitation: 'Saneamiento',
   };
-  return labels[type] || type;
-}
-
-function getCapacityTypeLabel(type) {
-  const labels = {
-    community_center: 'Salón Comunal',
-    sports: 'Instalación Deportiva',
-    pharmacy: 'Droguería',
-    health: 'Centro de Salud'
-  };
-  return labels[type] || type;
+    return map[type] || type;
 }
 
 function getCapacityIcon(type) {
-  const icons = {
-    community_center: '🏛️',
-    sports: '⚽',
-    pharmacy: '💊',
-    health: '🏥'
+    switch (type) {
+        case 'shelter':
+            return '🏠';
+        case 'health':
+            return '🏥';
+        case 'school':
+            return '🏫';
+        case 'fire':
+            return '🚒';
+        default:
+            return '📍';
+    }
+}
+
+function getCapacityTypeLabel(type) {
+    const map = {
+        shelter: 'Albergue',
+        health: 'Centro de salud',
+        school: 'Colegio',
+        fire: 'Bomberos',
   };
-  return icons[type] || '📍';
+    return map[type] || type;
 }

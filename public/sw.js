@@ -45,8 +45,8 @@ self.addEventListener('push', (event) => {
     icon: notificationData.icon,
     badge: notificationData.badge,
     data: notificationData.data,
-    requireInteraction: severity === 'high', // Notificaciones de alta severidad requieren interacción
-    vibrate: severity === 'high' ? [200, 100, 200, 100, 200] : [200, 100, 200],
+      requireInteraction: 'high' === severity, // Notificaciones de alta severidad requieren interacción
+      vibrate: 'high' === severity ? [200, 100, 200, 100, 200] : [200, 100, 200],
     actions: [
       {
         action: 'view',
@@ -62,10 +62,10 @@ self.addEventListener('push', (event) => {
   };
 
   // Añadir etiqueta visual según severidad
-  if (severity === 'high') {
+    if ('high' === severity) {
     notificationOptions.tag = 'alert-high';
     notificationOptions.renotify = true;
-  } else if (severity === 'medium') {
+    } else if ('medium' === severity) {
     notificationOptions.tag = 'alert-medium';
   } else {
     notificationOptions.tag = 'alert-low';
@@ -88,7 +88,7 @@ self.addEventListener('notificationclick', (event) => {
   const notificationData = event.notification.data || {};
   const urlToOpen = notificationData.url || '/alerts';
 
-  if (action === 'close') {
+    if ('close' === action) {
     return;
   }
 

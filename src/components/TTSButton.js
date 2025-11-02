@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 export default function TTSButton({ text = "", lang = "es-CO", label = "Leer alerta", small = false }) {
   // Do not access `window` during render to avoid SSR/client markup mismatch.
@@ -11,8 +11,12 @@ export default function TTSButton({ text = "", lang = "es-CO", label = "Leer ale
   const selectedVoiceRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!("speechSynthesis" in window)) return;
+      if ("undefined" === typeof window) {
+          return;
+      }
+      if (!("speechSynthesis" in window)) {
+          return;
+      }
 
     synthRef.current = window.speechSynthesis;
     setSupported(true);
@@ -23,16 +27,24 @@ export default function TTSButton({ text = "", lang = "es-CO", label = "Leer ale
     };
 
     load();
-    if (synthRef.current) synthRef.current.onvoiceschanged = load;
+      if (synthRef.current) {
+          synthRef.current.onvoiceschanged = load;
+      }
 
     return () => {
-      if (synthRef.current) synthRef.current.onvoiceschanged = null;
+        if (synthRef.current) {
+            synthRef.current.onvoiceschanged = null;
+        }
     };
   }, [lang]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!("speechSynthesis" in window)) return;
+      if ("undefined" === typeof window) {
+          return;
+      }
+      if (!("speechSynthesis" in window)) {
+          return;
+      }
 
     const onEnd = () => setIsSpeaking(false);
     window.addEventListener("speechend", onEnd);
@@ -48,9 +60,13 @@ export default function TTSButton({ text = "", lang = "es-CO", label = "Leer ale
     if (synth.speaking) {
       synth.cancel();
     }
-    if (!text || text.trim().length === 0) return;
+      if (!text || 0 === text.trim().length) {
+          return;
+      }
     const u = new SpeechSynthesisUtterance(text);
-    if (selectedVoiceRef.current) u.voice = selectedVoiceRef.current;
+      if (selectedVoiceRef.current) {
+          u.voice = selectedVoiceRef.current;
+      }
     u.lang = lang;
     u.rate = 1;
     u.pitch = 1;
@@ -63,7 +79,9 @@ export default function TTSButton({ text = "", lang = "es-CO", label = "Leer ale
 
   const stop = () => {
     const synth = synthRef.current;
-    if (!synth) return;
+      if (!synth) {
+          return;
+      }
     synth.cancel();
     setIsSpeaking(false);
   };

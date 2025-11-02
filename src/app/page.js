@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import styles from "./page.module.css";
 import InteractiveMap from "@/components/InteractiveMap";
 
@@ -264,7 +264,7 @@ export default function Home() {
                   )}
 
                   {/* Key Factors */}
-                  {aiAnalysis.keyFactors && aiAnalysis.keyFactors.length > 0 && (
+                    {aiAnalysis.keyFactors && 0 < aiAnalysis.keyFactors.length && (
                     <div className={styles.keyFactors}>
                       <h4>Factores Críticos</h4>
                       <ul>
@@ -276,7 +276,7 @@ export default function Home() {
                   )}
 
                   {/* Recommendations */}
-                  {aiAnalysis.recommendations && aiAnalysis.recommendations.length > 0 && (
+                    {aiAnalysis.recommendations && 0 < aiAnalysis.recommendations.length && (
                     <div className={styles.recommendations}>
                       <h4>Recomendaciones Priorizadas</h4>
                       {aiAnalysis.recommendations.slice(0, 3).map((rec, idx) => (
