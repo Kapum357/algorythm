@@ -1,6 +1,6 @@
 import js from "@eslint/js";
 import globals from "globals";
-import react from "eslint-plugin-react";
+import reactPlugin from "eslint-plugin-react";
 
 export default [
   // Ignore generated and external files
@@ -18,14 +18,14 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.{js,jsx,mjs}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: { ...globals.browser, ...globals.node },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
-    plugins: { react },
+    plugins: { react: reactPlugin },
     settings: { react: { version: "detect" } },
   },
 ];

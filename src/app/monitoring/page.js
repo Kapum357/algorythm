@@ -5,19 +5,6 @@ import styles from "./page.module.css";
 export default function TechnicalMonitoring() {
   return (
     <div className={styles.page}>
-      {/* Top bar similar to mock */}
-      <header className={styles.topbar}>
-        <div className={styles.brand}>
-          <span aria-hidden>■</span>
-          <span className="text-body1">Climate Resilience Tool</span>
-        </div>
-        <nav className={styles.nav} aria-label="Top Navigation">
-          <a href="/dashboard">Dashboard</a>
-          <a href="/impact">Analysis</a>
-          <a href="#">Reports</a>
-          <a href="#">Settings</a>
-        </nav>
-      </header>
 
       <h1 className={`text-h4 ${styles.title}`}>Technical Monitoring</h1>
 

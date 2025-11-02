@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 const LOOKER_IFRAME_SRC =
   "https://lookerstudio.google.com/embed/reporting/029a49ca-596f-481e-84ae-741e750729b8/page/faxdF";
 

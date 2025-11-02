@@ -64,6 +64,7 @@ a {
   --color-light-alert: #ffd700;
   --color-light-info: #007bff;
   --color-light-error: #c8102e;
+  --color-light-success: #2e7d32; /* verde accesible */
 
   /* Tokens semánticos (apuntan a claro por defecto) */
   --color-background: var(--color-light-background);
@@ -78,6 +79,7 @@ a {
   --color-alert: var(--color-light-alert);
   --color-info: var(--color-light-info);
   --color-error: var(--color-light-error);
+  --color-success: var(--color-light-success);
 
   /* Tipografía */
   --font-primary: var(
@@ -148,6 +150,7 @@ a {
     --color-dark-alert: #ffd700;
     --color-dark-info: #339cff;
     --color-dark-error: #ff4136;
+  --color-dark-success: #6dd36d;
 
     /* Reasignar tokens semánticos a oscuro */
     --color-background: var(--color-dark-background);
@@ -162,6 +165,7 @@ a {
     --color-alert: var(--color-dark-alert);
     --color-info: var(--color-dark-info);
     --color-error: var(--color-dark-error);
+  --color-success: var(--color-dark-success);
   }
 }
 

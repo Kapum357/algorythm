@@ -5,45 +5,6 @@ import styles from "./page.module.css";
 export default function Home() {
   return (
     <div className={styles.page}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.brand}>
-          <span className={styles.brandIcon} aria-hidden>
-            ■
-          </span>
-          <span className="text-body1">Cruz Roja Colombiana</span>
-        </div>
-        <nav className={styles.nav} aria-label="Primary">
-          <a href="#" className={styles.navItem}>
-            Inicio
-          </a>
-          <a href="/dashboard" className={styles.navItem}>
-            Panel
-          </a>
-          <a href="#" className={styles.navItem}>
-            Mapas
-          </a>
-          <a href="/impact" className={styles.navItem}>
-            Impacto
-          </a>
-          <a href="/alerts" className={styles.navItem}>
-            Alertas
-          </a>
-          <a href="/reports" className={styles.navItem}>
-            Reportes
-          </a>
-          <a href="/monitoring" className={styles.navItem}>
-            Monitoreo
-          </a>
-          <a href="#" className={styles.navItem}>
-            Recursos
-          </a>
-          <button className={styles.iconBtn} aria-label="Idioma o región">
-            🌐
-          </button>
-          <div className={styles.avatar} aria-hidden />
-        </nav>
-      </header>
 
       {/* Content */}
       <main className={styles.content}>
