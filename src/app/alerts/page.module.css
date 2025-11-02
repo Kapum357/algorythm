@@ -198,16 +198,16 @@
 }
 
 .lottieWrap {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .svgWrap {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,7 +215,7 @@
 
 .reportBtn {
   width: 100%;
-  height: 180px;
+  height: 230px; /* slightly taller */
   border-radius: 12px;
   border: none;
   cursor: pointer;
@@ -325,5 +325,3 @@
 .main { 
   padding-left: 6px;
 }
-
-/* Duplicate rule removed - already defined above with hover states */
