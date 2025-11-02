@@ -84,6 +84,9 @@ html {
   /* Accent gradient stops (can be themed) */
   --gradient-accent-start: var(--color-secondary);
   --gradient-accent-end: var(--color-primary);
+  /* Muted accent overlay for subtle colored surfaces (use sparingly) */
+  --color-accent-muted: rgba(200,16,46,0.06);
+  --color-accent-soft: rgba(0,123,255,0.06);
 
   /* Tipografía */
   --font-primary: var(
@@ -215,4 +218,89 @@ html {
 /* Asegurar que el body use la fuente primaria */
 body {
   font-family: var(--font-primary);
+}
+
+/* === Small, tasteful UI utilities === */
+
+/* Buttons - base and primary */
+button,
+.btn {
+  font: var(--button-text-weight) var(--button-text-size) / var(--button-text-line) var(
+    --font-primary
+  );
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gradient-accent-start), var(--gradient-accent-end));
+  color: var(--color-on-primary);
+  border: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px dashed var(--color-border);
+}
+
+/* Card utility - consistent surfaces */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+/* Links - slightly more color on hover */
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Subtle colored bands for sections (use sparingly) */
+.band {
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, var(--color-accent-muted), rgba(255,255,255,0));
+  border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* Small helper for colored badges */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+/* NavBar utilities */
+.navBar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.navItemActive {
+  box-shadow: 0 8px 24px rgba(200,16,46,0.12);
+  transform: translateY(-1px);
+}
+
+/* Small circular alert indicator for nav items */
+.navAlertDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-alert);
+  margin-left: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }

@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import styles from "./page.module.css";
+import TTSButton from "../../components/TTSButton";
 
 function severityColor(sev) {
   if (sev === "high") return "var(--color-error)";      // #C8102E (Cruz Roja red)
@@ -107,25 +108,6 @@ export default function AlertsPage() {
         </div>
 
       {/* Title */}
-      <section className={styles.titleBlock}>
-        <h1 className="text-h4">🚨 Sistema de Alertas Climáticas - Soacha</h1>
-        <p className="text-body2">Monitoreo de condiciones meteorológicas y alertas preventivas para El Danubio y La María</p>
-        
-        <div className={styles.climateBanner}>
-          <div className={styles.bannerItem}>
-            <strong>🌊 Temporada Alta de Riesgo</strong>
-            <p>Marzo - Junio, Octubre - Noviembre</p>
-          </div>
-          <div className={styles.bannerItem}>
-            <strong>🌧️ Monitoreo IDEAM</strong>
-            <p>Integración conceptual con datos en tiempo real</p>
-          </div>
-          <div className={styles.bannerItem}>
-            <strong>📊 Histórico</strong>
-            <p>71% incidencia de inundaciones</p>
-          </div>
-        </div>
-      </section>
 
       {/* Layout: sidebar + main content */}
       <div className={`${styles.layout} ${!sidebarOpen ? styles.layoutCollapsed : ""}`}>
@@ -134,6 +116,15 @@ export default function AlertsPage() {
             <div className={styles.brandBlock}>
               <div style={{ fontWeight: 800 }}>Cruz Roja Colombiana</div>
               <div style={{ color: "var(--color-text-secondary)", fontSize: 12 }}>Soacha</div>
+            </div>
+
+            {/* TTS for sidebar content: reads organization and alert level descriptions */}
+            <div style={{ marginBottom: 12 }}>
+              <TTSButton
+                text={`Cruz Roja Colombiana, Soacha. Niveles de alerta: Alto — Inundaciones severas, riesgo inmediato a la vida y propiedades. Medio — Inundaciones locales, posible daño a infraestructura y servicios. Bajo — Inconvenientes menores, seguimiento recomendado.`}
+                label="Leer información"
+                small
+              />
             </div>
 
 
@@ -163,6 +154,27 @@ export default function AlertsPage() {
                 </div>
               </div>
             </div>
+
+                  <section className={styles.titleBlock}>
+        <h1 className="text-h4">🚨 Sistema de Alertas Climáticas - Soacha</h1>
+        <p className="text-body2">Monitoreo de condiciones meteorológicas y alertas preventivas para El Danubio y La María</p>
+        
+        <div className={styles.climateBanner}>
+          <div className={styles.bannerItem}>
+            <strong>🌊 Temporada Alta de Riesgo</strong>
+            <p>Marzo - Junio, Octubre - Noviembre</p>
+          </div>
+          <div className={styles.bannerItem}>
+            <strong>🌧️ Monitoreo IDEAM</strong>
+            <p>Integración conceptual con datos en tiempo real</p>
+          </div>
+          <div className={styles.bannerItem}>
+            <strong>📊 Histórico</strong>
+            <p>71% incidencia de inundaciones</p>
+          </div>
+        </div>
+      </section>
+
           </aside>
         )}
 
@@ -189,7 +201,6 @@ export default function AlertsPage() {
               >
                 <div style={{ fontSize: 36, marginBottom: 8 }}>
                   {tile.key === "high" ? (
-                    // High severity: use the provided Weather-storm Lottie animation with SVG fallback
                     <div className={styles.lottieWrap}>
                       {lottieReady ? (
                         <lottie-player
@@ -202,13 +213,12 @@ export default function AlertsPage() {
                           aria-label="storm animation"
                         />
                       ) : (
-                        <div className={styles.svgWrap}>
-                          <img src="/vectorized.svg" alt="icon severidad alta" width={80} height={80} />
+                        <div className={styles.svgWrap} aria-hidden>
+                          <span style={{ fontSize: 80, lineHeight: 1 }}>🔴</span>
                         </div>
                       )}
                     </div>
                   ) : tile.key === "medium" ? (
-                    // Medium severity: Rainy animation
                     <div className={styles.lottieWrap}>
                       {lottieReady ? (
                         <lottie-player
@@ -221,13 +231,10 @@ export default function AlertsPage() {
                           aria-label="rain animation"
                         />
                       ) : (
-                        // graceful fallback until player is ready
                         "🟡"
                       )}
                     </div>
                   ) : (
-                    // For the low severity tile render the Lottie animation if available.
-                    // Place your Lottie JSON at: public/animations/Weather-partly-shower.json
                     <div className={styles.lottieWrap}>
                       {lottieReady ? (
                         <lottie-player
@@ -240,17 +247,25 @@ export default function AlertsPage() {
                           aria-label="weather animation"
                         />
                       ) : (
-                        // graceful fallback until player is ready
                         "🟢"
                       )}
                     </div>
                   )}
                 </div>
+
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontWeight: 800 }}>Reportar</div>
                   <div style={{ fontWeight: 900 }}>{tile.key === "high" ? "Alto" : tile.key === "medium" ? "Medio" : "Bajo"}</div>
                 </div>
               </button>
+            </div>
+
+            <div style={{ marginTop: 12, textAlign: "center" }}>
+              <TTSButton
+                text={`Reporte: ${tile.label}. Actualmente hay ${counts[tile.key]} reportes.`}
+                label="Leer alerta"
+                small
+              />
             </div>
           </article>
         ))}

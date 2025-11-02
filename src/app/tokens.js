@@ -18,6 +18,8 @@ export const COLORS = {
   "light.primary.hover": "#FF4136",
   "light.secondary": "#007BFF",
   "light.secondary.hover": "#005BB5",
+  "light.accent.muted": "rgba(200,16,46,0.06)",
+  "light.accent.soft": "rgba(0,123,255,0.06)",
   "light.border": "#DADADA",
   "light.alert": "#FFD700",
   "light.info": "#007BFF",

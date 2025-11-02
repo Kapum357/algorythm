@@ -9,34 +9,24 @@ export default function NavBar() {
   const links = [
     { href: "/", label: "Inicio" },
     { href: "/dashboard", label: "Panel" },
+    { href: "/alerts", label: "Alertas" },
     { href: "/reports", label: "Reportes" },
     { href: "/monitoring", label: "Monitoreo" },
     { href: "/ai-demo", label: "🤖 AI Demo", accent: true },
   ];
 
   return (
-    <nav aria-label="Primary navigation" style={{ display: "flex", gap: 12, alignItems: "center" }}>
+    <nav aria-label="Primary navigation" className="navBar">
       {links.map((l) => {
         const isActive = pathname === l.href || (l.href !== "/" && pathname?.startsWith(l.href));
-        const baseStyle = {
-          color: isActive ? "var(--color-text-primary)" : "var(--color-text-secondary)",
-          padding: "6px 10px",
-          borderRadius: 6,
-          textDecoration: "none",
-          fontWeight: isActive ? 700 : 500,
-        };
-
-        if (l.accent) {
-          return (
-            <Link key={l.href} href={l.href} style={{ ...baseStyle, color: "var(--color-on-primary)", background: "linear-gradient(135deg, var(--gradient-accent-start) 0%, var(--gradient-accent-end) 100%)" }} aria-current={isActive ? "page" : undefined}>
-              {l.label}
-            </Link>
-          );
-        }
+        const classes = ["btn"];
+        if (l.accent) classes.push("btn-primary");
+        if (isActive) classes.push("navItemActive");
 
         return (
-          <Link key={l.href} href={l.href} style={baseStyle} aria-current={isActive ? "page" : undefined}>
+          <Link key={l.href} href={l.href} className={classes.join(" ")} aria-current={isActive ? "page" : undefined}>
             {l.label}
+            {l.href === "/alerts" && <span className="navAlertDot" aria-hidden="true" />}
           </Link>
         );
       })}
