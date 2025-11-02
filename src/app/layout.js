@@ -28,7 +28,11 @@ export default function RootLayout({ children }) {
           color: "var(--color-text-primary)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontWeight: 800, fontSize: 16 }}>Cruz Roja Colombiana</span>
+            <img
+              src="/branding/CR-ES-Horizontal-RGB.svg"
+              alt="Cruz Roja Colombiana"
+              style={{ height: 28, objectFit: "contain", display: "block" }}
+            />
           </div>
           <NavBar />
         </header>

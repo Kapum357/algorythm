@@ -1,9 +1,81 @@
-**RETO: CRUZ ROJA – ANÁLISIS Y VISUALIZACIÓN GEOESPACIAL PARA LA RESILIENCIA CLIMÁTICA URBANA EN SOACHA**
-=========================================================================================================
+# 🌱 Renace Soacha
 
-Contexto:El municipio de Soacha enfrenta desafíos significativos asociados al cambio climático y a la urbanización acelerada. Las comunidades de El Danubio y La María, en particular, son altamente vulnerables a inundaciones y altas temperaturas, agravadas por la deficiencia de infraestructura y la falta de acceso a información actualizada sobre el riesgo. La Cruz Roja Colombiana, junto con la Z Zurich Foundation y la Universidad de La Sabana, lidera el Proyecto de Resiliencia Climática Urbana (RCU), con el propósito de fortalecer la capacidad de las comunidades para anticipar, responder y recuperarse ante eventos climáticos extremos.Durante el proyecto, se han recolectado datos valiosos a través de metodologías como el Análisis de Vulnerabilidades y Capacidades Ampliado (AVCA) y la Medición de Resiliencia Climática Comunitaria (CRMC). Sin embargo, estos datos se encuentran dispersos y no permiten una visualización clara del impacto o una planificación preventiva efectiva. Este reto busca transformar dichos datos en una herramienta interactiva y analítica basada en mapas de acceso libre y tecnologías geoespaciales.
+## Plataforma Inteligente de Resiliencia Climática
 
-**Definición del reto:**
+**Transformando datos en resiliencia, tecnología en esperanza.**
+
+---
+
+## 🎯 Contexto Estratégico
+
+El municipio de Soacha, Cundinamarca, se encuentra en una **encrucijada crítica** donde la urbanización acelerada, alta densidad poblacional y construcción informal convergen con los impactos severos del cambio climático. Fenómenos como **inundaciones, remociones en masa y avenidas torrenciales**, exacerbados por la variabilidad climática, han creado un escenario de vulnerabilidad que amenaza la seguridad y bienestar de miles de habitantes.
+
+### El Desafío en Números
+
+- 🌊 **71% de incidencia de inundaciones** en la zona
+- ⚠️ **62% no conoce protocolos de evacuación**
+- 💰 **81% sin ahorros para emergencias**
+- 🍽️ **27% sufre inseguridad alimentaria**
+- 📅 **Temporadas críticas**: Marzo-Junio, Octubre-Noviembre
+- 👥 **10,605 personas** objetivo de la Fase II del UCRP (2025-2027)
+
+### Proyecto de Resiliencia Climática Urbana (UCRP) - Fase II
+
+El **UCRP**, respaldado por **Zurich Foundation** e implementado por **Cruz Roja Colombiana** en alianza con la **Universidad de La Sabana**, centra sus esfuerzos en las comunidades de **La María y El Danubio**. El objetivo: fortalecer capacidades comunitarias para reducir la vulnerabilidad ante amenazas climáticas, pasando de un **modelo reactivo a uno proactivo y basado en evidencia**.
+
+**Renace Soacha** es la respuesta tecnológica a este desafío, transformando datos dispersos (AVCA/CRMC) en inteligencia accionable mediante:
+
+- 🗺️ Visualización geoespacial interactiva
+- 🤖 Inteligencia Artificial para análisis predictivo
+- 📲 Alertas tempranas vía notificaciones push
+- 💬 Asistente virtual conversacional
+- 📊 Dashboard de impacto en tiempo real
+
+---
+
+## 🚀 Inicio Rápido
+
+### Prerrequisitos
+
+- Node.js 18+ instalado
+- Git instalado
+- API Key de Ollama Cloud (gratuita en [ollama.com/settings/keys](https://ollama.com/settings/keys))
+
+### Instalación
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Kapum357/algorythm.git
+cd algorythm
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar variables de entorno
+cp .env.local.example .env.local
+# Editar .env.local y agregar OLLAMA_API_KEY
+
+# 4. Generar claves VAPID para notificaciones push
+npm run generate-vapid-keys
+
+# 5. Iniciar servidor de desarrollo
+npm run dev
+
+# 6. Abrir en navegador
+# http://localhost:3000
+```
+
+### Rutas Principales
+
+- `/` - Mapa interactivo de riesgo
+- `/alerts` - Sistema de alertas tempranas
+- `/dashboard` - Panel de métricas e impacto
+- `/ecovigia` - Dashboard integrado EcoVigía
+- `/assistant` - Asistente virtual conversacional
+
+---
+
+## 🎯 Definición del Reto (Cruz Roja Colombiana)
 ------------------------
 
 El desafío consiste en desarrollar un prototipo funcional (web, dashboard o aplicación) que integre datos georreferenciados y visualizaciones interactivas para analizar, monitorear y comunicar información sobre la resiliencia climática urbana en Soacha. La solución debe permitir identificar las zonas de mayor vulnerabilidad, estimar la cantidad de personas afectadas por una emergencia y generar alertas preventivas basadas en datos ambientales o históricos.Líneas de desarrollo posibles:1. Mapa interactivo con capas georreferenciadas que muestre zonas de riesgo, puntos críticos y rutas seguras.2. Dashboard de impacto poblacional: herramienta que calcule cuántas personas o familias fueron afectadas por cada evento y en qué sectores.3. Sistema de predicción o alerta preventiva mediante IA o análisis estadístico de datos climáticos (precipitación, temperatura, humedad).4. Plataforma de reporte ciudadano o panel de control que permita visualizar actualizaciones de campo, fotografías o registros.

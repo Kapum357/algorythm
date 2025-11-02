@@ -9,7 +9,7 @@ export default function NavBar() {
   const links = [
     { href: "/", label: "Inicio" },
     { href: "/dashboard", label: "Panel" },
-      {href: "/ecovigia", label: "EcoVigía", accent: true},
+      {href: "/ecovigia", label: "Renace Soacha", accent: true},
       {href: "/alerts", label: "Alertas", showDot: true},
     { href: "/reports", label: "Reportes" },
     { href: "/monitoring", label: "Monitoreo" },

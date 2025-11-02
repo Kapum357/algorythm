@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from "react";
 import styles from "./ChatBot.module.css";
 import TTSButton from "./TTSButton";
 
-export default function ChatBot({ context = "climate-resilience-assistant", compact = false }) {
+export default function ChatBot({ context = "climate-resilience-assistant", compact = false, chatEndpoint = "/api/ollama/chat-bot" }) {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -51,7 +51,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
         content: msg.content
       }));
 
-      const response = await fetch("/api/ollama/chat-bot", {
+      const response = await fetch(chatEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -70,7 +70,7 @@ export default function ChatBot({ context = "climate-resilience-assistant", comp
       if (data.success) {
         const assistantMessage = {
           role: "assistant",
-          content: data.response,
+          content: data.response || data.message || data.content || JSON.stringify(data),
           timestamp: new Date().toISOString()
         };
         setMessages(prev => [...prev, assistantMessage]);

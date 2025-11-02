@@ -54,13 +54,9 @@ export default function DashboardPrincipal() {
           <small>Soacha</small>
         </div>
         <nav className={styles.menu} aria-label="Secciones">
-            <Link href="/dashboard" className={"/dashboard" === pathname ? styles.activeLink : undefined}>🏠
-                Inicio</Link>
             <Link href="/alerts" className={"/alerts" === pathname ? styles.activeLink : undefined}>🔔 Alertas</Link>
             <Link href="/reports" className={"/reports" === pathname ? styles.activeLink : undefined}>🗂️ Reportes</Link>
             <Link href="/impact" className={"/impact" === pathname ? styles.activeLink : undefined}>📊 Análisis</Link>
-            <Link href="/communities" className={"/communities" === pathname ? styles.activeLink : undefined}>👥
-                Comunidades</Link>
             <Link href="/assistant" className={"/assistant" === pathname ? styles.activeLink : undefined}>🎤
                 Asistente</Link>
         </nav>

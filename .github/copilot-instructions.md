@@ -1,69 +1,41 @@
-# DIR-Soacha – AI Agent Working Notes (Next.js 16)
+# AI agent notes — repo-specific quick reference (Next.js App Router)
 
-Purpose: Make AI agents productive fast in this repo. Keep answers grounded in THESE patterns and files.
+Purpose: help an automated coding agent be productive in this repository by describing architecture, conventions, and concrete examples to change safely.
 
-## Architecture & Data Flow
-- Framework: Next.js 16 (App Router in `src/app/`), React 19.2; all pages are client components (`"use client"`). React Compiler enabled in `next.config.mjs`.
-- Flow: Client component → fetch(`/api/*`) → API route (`src/app/api/**/route.js`) → service in `src/lib/*` → external API (Ollama Cloud) → JSON to client.
-- Server-only code: `src/lib/ollama-*.js` must be imported ONLY in API routes (never in client components).
+Core architecture (big picture)
+- Framework: Next.js App Router under `src/app/` — client components (`"use client"`) are used for pages. Server-only helper code lives in `src/lib/`.
+- Data flow: Client UI → fetch(`/api/*`) → API route (`src/app/api/**/route.js`) → service layer (`src/lib/*`) → external APIs (Ollama, web push) → JSON back to client.
+- Service boundary rule: anything that calls `ollama` or `web-push` lives in `src/lib/*` and may only be imported by API routes (server code). Do NOT import `src/lib/ollama-*` or `web-push` from client components.
 
-## Key Folders (read these first)
-- `src/lib/ollama-config.js`: creates Ollama client, reads env, model defaults. Exports `createOllamaClient`, `OLLAMA_CONFIG`, `isOllamaConfigured`.
-- `src/lib/ollama-service.js`: AI capabilities: `processVoiceQuery`, `analyzeVulnerability`, `assessFloodRisk`, `generateEmergencyResponse`, `predictRiskPatterns`, `analyzeStructuredOutput` (Zod), `generateCommunityReport` (stream), `performWebSearch`, `fetchWebPage`, `conductClimateResearch`, `testConnection`.
-- `src/app/api/ollama/*/route.js`: One endpoint per capability. Present routes include: `analyze`, `flood-risk`, `emergency`, `predict`, `structured`, `research`, `status`, `chat-bot`, `voice`, `web-search`, `web-fetch`, `zone-analysis`.
-- Other API routes: `src/app/api/chat/route.js`. Web Push: `src/app/api/notifications/{subscribe,send}/route.js` with service worker `public/sw.js`.
-- Demos/UI: `src/app/ai-demo/page.js` shows client→API patterns; components in `src/components/` (`OllamaStatus`, `ChatBot`, `InteractiveMap`, etc.).
+Key files & examples to read first
+- `src/lib/ollama-config.js` — builds Ollama client and exports config (OLLAMA_CONFIG, createOllamaClient, isOllamaConfigured).
+- `src/lib/ollama-service.js` — single place implementing AI capabilities (voice, analysis, streaming report, structured Zod outputs). Look here for prompt patterns, streaming, and JSON-schema/Zod handling.
+- `src/app/api/ollama/*/route.js` — one route per capability; follow their POST pattern when adding endpoints.
+- `src/app/ai-demo/page.js` and components under `src/components/` (`OllamaStatus`, `ChatBot`, `TTSButton`, `VoiceAssistant`) for client→API usage examples.
+- Push: `scripts/generate-vapid-keys.js`, `src/app/api/notifications/{subscribe,send}/route.js`, `public/sw.js`, and `src/components/PushNotifications.js` show how VAPID keys and SW are wired.
 
-## AI Integration
-- Library: `ollama` cloud client via `createOllamaClient()`; adds `Authorization: Bearer ${OLLAMA_API_KEY}` when present.
-- Model selection: `OLLAMA_CONFIG.cloudModel = process.env.NEXT_PUBLIC_OLLAMA_MODEL || "gpt-oss:120b-cloud"` (fallback label `glm-4.6:cloud`).
-- Patterns:
-  - Non-streamed: `ollama.chat({ model, messages, stream: false, options })`.
-  - Streaming: iterate `for await (const part of response)` in `generateCommunityReport`.
-  - Structured JSON: build Zod schema → `zod-to-json-schema` → include schema in prompt → call with `format: jsonSchema, options: { temperature: 0 }` → JSON.parse → Zod.parse with error handling.
-  - Web-augmented research: `performWebSearch` → synthesize in `conductClimateResearch` with sources.
+Concrete coding patterns (copy/paste friendly)
+- API route (server-only) shape: parse `request.json()`, call a function from `src/lib/ollama-service.js`, return `NextResponse.json({ success: true, <payload> })` or 500 on error. Keep result shapes consistent with `ai-demo` (e.g., `{ analysis }`, `{ recommendations }`).
+- Ollama calls:
+  - Non-stream: `ollama.chat({ model, messages, stream: false, options })`.
+  - Stream: `for await (const part of response) { /* append content */ }` (see `generateCommunityReport`).
+  - Structured JSON: convert Zod -> JSON Schema, include in prompt and call with `format: jsonSchema` then parse + Zod.parse (handle parse errors gracefully).
 
-## Env & Config
-- Create `.env` (or run `npm run generate-vapid-keys` to scaffold) with:
-  - `OLLAMA_API_KEY` (required for cloud calls)
-  - `OLLAMA_HOST` (default `https://ollama.com`)
-  - `NEXT_PUBLIC_OLLAMA_MODEL` (default `gpt-oss:120b-cloud`)
-  - Push: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`
-- Headers/CSP: `next.config.mjs` sets permissive CSP and `Service-Worker-Allowed: /`.
+Environment & developer workflows
+- Dev server: `npm run dev`. Build/start: `npm run build` and `npm start`.
+- VAPID push keys: run `npm run generate-vapid-keys` to create keys referenced in `.env` (see `.env.local.example`). Components and API warn/help if keys are missing — use that workflow when testing push.
+- Lint: `npm run lint`; project uses ESLint and has TS config but most code is JS.
 
-## Build/Run Workflows
-- Dev: `npm run dev` (check `/ai-demo` for AI features; `/alerts` for push).
-- Build/Start: `npm run build`; `npm start`.
-- Push setup: `npm run generate-vapid-keys` → restart dev server → enable on `/alerts`.
-- Lint: `npm run lint` (ESLint 9). TypeScript config exists; most code is JS.
+Project-specific gotchas
+- NEVER import `src/lib/ollama-service.js` or `src/lib/ollama-config.js` into client components — these files use server-only APIs and must stay server-side (API routes). Search for `createOllamaClient()` usages in `src/lib`.
+- Many client components expect specific response shapes from API routes (see `src/app/ai-demo/page.js` and `src/components/ChatBot.js`). Keep shapes stable.
+- Push feature relies on a working service worker (`public/sw.js`) and properly configured VAPID keys; the repo includes warnings and helper script `scripts/generate-vapid-keys.js`.
 
-## UI & Styling Conventions
-- CSS Modules per page/component (`*.module.css`).
-- Tokens: `src/app/globals.css` (light-only). Use semantic vars: `var(--color-surface)`, `var(--color-border)`, text utilities `.text-h1..text-caption`; helper `.btn`, `.card`. Card radius: 12px; spacing 16/24px.
+Contract for edits an AI agent should follow (inputs/outputs/errors)
+- Inputs: API routes accept JSON via POST, typically small objects (prompts, IDs, params).
+- Outputs: return JSON using `NextResponse.json({ success: true, <payload>, timestamp })`. On error return JSON with `{ error: message }` and HTTP 500.
+- Error modes to handle explicitly: missing env keys (OLLAMA_API_KEY, VAPID keys), Zod parse failures for structured outputs, streaming interruptions.
 
-## API Route Pattern
-```js
-// /api/ollama/{action}/route.js
-import { NextResponse } from 'next/server';
-import { specificFunction } from '@/lib/ollama-service';
-
-export async function POST(request) {
-  try {
-    const data = await request.json();
-    const result = await specificFunction(data);
-    return NextResponse.json({ success: true, ...shape(result), timestamp: new Date().toISOString() });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-```
-- Shape result to match existing clients (see `ai-demo`): `{ analysis }`, `{ assessment }`, `{ recommendations }`, or `{ result }`.
-
-## Pitfalls to avoid
-- Importing `ollama-service.js` in client components.
-- Missing `OLLAMA_API_KEY` (see `<OllamaStatus />` or `/api/ollama/status`).
-- Push without VAPID keys or unregistered service worker.
-
-Good references: `src/app/ai-demo/page.js`, `src/lib/ollama-config.js`, `src/lib/ollama-service.js`.
-
-If any section needs more depth (e.g., exact response shapes per route), say which route to expand and we’ll add it.
+If you need more detail
+- If you plan to modify an existing route, grep for it under `src/app/api/ollama/` and align output shape to the client usage in `src/components/*` or `src/app/ai-demo/page.js`.
+- If adding new AI capabilities, implement logic in `src/lib/ollama-service.js`, expose a single function, and wire a thin API route at `src/app/api/ollama/<name>/route.js`.
