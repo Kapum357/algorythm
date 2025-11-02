@@ -189,6 +189,10 @@
   align-items: start;
 }
 
+.layoutCollapsed { grid-template-columns: 1fr; }
+.layoutCollapsed .sidebar { display: none; }
+.layoutCollapsed .main { padding-left: 0; }
+
 .sidebar {
   padding: 18px;
   border-right: 1px solid rgba(255,255,255,0.03);
@@ -204,6 +208,15 @@
 .levelDot { width: 14px; height: 14px; border-radius: 4px; margin-top: 4px; }
 
 .main { padding-left: 6px; }
+
+.toggleBtn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
