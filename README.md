@@ -78,6 +78,53 @@ La integración de IA transforma DIR-Soacha de una herramienta de visualización
 
 ---
 
-## 📞 Soporte
+---
+
+## 🔔 Sistema de Notificaciones Push
+
+DIR-Soacha ahora incluye un **sistema completo de notificaciones push** para enviar alertas climáticas en tiempo real a dispositivos móviles y de escritorio.
+
+### 📱 Características
+
+- ✅ **Multiplataforma**: Android, iOS, Windows, Linux, macOS
+- ✅ **Tiempo Real**: Notificaciones instantáneas incluso con navegador cerrado
+- ✅ **Niveles de Severidad**: Alta (roja), Media (amarilla), Baja (verde)
+- ✅ **Seguro**: Encriptación end-to-end con VAPID
+- ✅ **Offline-Ready**: Funciona con Service Workers
+
+### � Configuración Rápida
+
+1. **Genera las llaves VAPID**:
+
+   ```bash
+   npm run generate-vapid-keys
+   ```
+
+2. **Reinicia el servidor**:
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Activa notificaciones**:
+   - Ve a <http://localhost:3000/alerts>
+   - Haz clic en "Activar Notificaciones"
+   - Acepta el permiso en tu navegador
+
+4. **Prueba el sistema**:
+   - Reporta una alerta de cualquier severidad
+   - Recibirás una notificación push instantánea
+
+### 📖 Documentación Completa
+
+- **[README de Push Notifications](./README_PUSH_NOTIFICATIONS.md)** - Guía completa del sistema
+- Arquitectura, API endpoints, integración con IA
+- Solución de problemas y mejores prácticas
+
+---
+
+## �📞 Soporte
 
 Para preguntas sobre la integración de IA: consulta la [documentación](./docs/) o abre un issue en GitHub.
+
+Para notificaciones push: consulta [README_PUSH_NOTIFICATIONS.md](./README_PUSH_NOTIFICATIONS.md)

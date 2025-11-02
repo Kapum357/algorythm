@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import styles from "./page.module.css";
+import PushNotifications from "@/components/PushNotifications";
 
 function severityColor(sev) {
   if (sev === "high") return "var(--color-error)";      // #C8102E (Cruz Roja red)
@@ -44,6 +45,42 @@ export default function AlertsPage() {
       status: "active",
     };
     setAlerts((p) => [newAlert, ...p]);
+    
+    // Enviar notificación push
+    sendPushNotification(severity);
+  }
+
+  async function sendPushNotification(severity) {
+    try {
+      const severityMessages = {
+        high: {
+          title: "🚨 ALERTA ALTA - Inundación Severa",
+          body: "Inundación severa reportada. Riesgo inmediato a vida y propiedades. Active protocolos de evacuación.",
+        },
+        medium: {
+          title: "⚠️ ALERTA MEDIA - Inundación Local",
+          body: "Inundación local reportada. Posible daño a infraestructura. Manténgase alerta.",
+        },
+        low: {
+          title: "ℹ️ ALERTA BAJA - Monitoreo",
+          body: "Inconvenientes menores detectados. Seguimiento recomendado.",
+        },
+      };
+
+      const message = severityMessages[severity] || severityMessages.medium;
+
+      await fetch("/api/notifications/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...message,
+          severity,
+          data: { url: "/alerts", alertId: generateId() },
+        }),
+      });
+    } catch (error) {
+      console.error("Error enviando notificación push:", error);
+    }
   }
 
   const counts = useMemo(() => {
@@ -254,6 +291,14 @@ export default function AlertsPage() {
             </div>
           </article>
         ))}
+          </section>
+
+          {/* Sección de notificaciones push */}
+          <section style={{ marginTop: 32 }}>
+            <h2 className="text-h5" style={{ marginBottom: 16 }}>
+              🔔 Configurar Notificaciones Push
+            </h2>
+            <PushNotifications />
           </section>
           </main>
         </div>

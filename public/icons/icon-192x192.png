@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#C8102E"/>
+  <g fill="white">
+    <circle cx="96" cy="50" r="8"/>
+    <path d="M96 70 L96 130 M86 120 L96 130 L106 120"/>
+    <path d="M60 140 L132 140 M60 155 L132 155"/>
+    <text x="96" y="180" text-anchor="middle" font-size="20" font-weight="bold">DIR</text>
+  </g>
+</svg>

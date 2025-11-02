@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72">
+  <circle cx="36" cy="36" r="36" fill="#C8102E"/>
+  <circle cx="36" cy="36" r="30" fill="white"/>
+  <circle cx="36" cy="36" r="24" fill="#C8102E"/>
+  <text x="36" y="44" text-anchor="middle" font-size="24" font-weight="bold" fill="white">!</text>
+</svg>
