@@ -14,6 +14,11 @@ export default function Home() {
 
   const [selectedCommunity, setSelectedCommunity] = useState("all");
   const [selectedRiskLevel, setSelectedRiskLevel] = useState("all");
+  
+  // AI Analysis state
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState(null);
 
   const toggleLayer = (layer) => {
     setActiveLayers(prev => ({
@@ -22,9 +27,49 @@ export default function Home() {
     }));
   };
 
-  const handleZoneClick = (zone) => {
+  const handleZoneClick = async (zone) => {
     console.log("Zona seleccionada:", zone);
-    // Aquí se puede integrar IA para análisis automático
+    
+    // Trigger automatic AI analysis
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    
+    try {
+      const response = await fetch('/api/ollama/structured', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          location: zone.properties?.Barrio || zone.name || 'Zona desconocida',
+          threats: [
+            'Inundaciones por desbordamiento',
+            'Alcantarillado artesanal insuficiente',
+            'Obstrucción de canales naturales'
+          ],
+          indicators: {
+            noEvac: 62,
+            noSavings: 81,
+            foodInsec: 27
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.result) {
+        setAiAnalysis(data.result);
+      } else {
+        throw new Error(data.error || 'No se pudo obtener análisis');
+      }
+    } catch (error) {
+      console.error('Error en análisis de IA:', error);
+      setAnalysisError(error.message);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -149,6 +194,140 @@ export default function Home() {
               </div>
             </div>
           </div>
+
+          {/* AI Analysis Panel */}
+          {(isAnalyzing || aiAnalysis || analysisError) && (
+            <div className={styles.aiPanel}>
+              <h3 className="text-h5">🤖 Análisis de IA Automático</h3>
+              
+              {isAnalyzing && (
+                <div className={styles.loading}>
+                  <div className={styles.spinner}></div>
+                  <p>Analizando zona con IA...</p>
+                </div>
+              )}
+              
+              {analysisError && (
+                <div className={styles.error}>
+                  <p>⚠️ Error: {analysisError}</p>
+                </div>
+              )}
+              
+              {aiAnalysis && !isAnalyzing && (
+                <div className={styles.analysisResult}>
+                  {/* Header with risk level and confidence */}
+                  <div className={styles.analysisHeader}>
+                    <div className={styles.riskBadge} data-risk={aiAnalysis.riskLevel?.toLowerCase()}>
+                      {aiAnalysis.riskLevel}
+                    </div>
+                    <div className={styles.confidence}>
+                      Confianza: {Math.round((aiAnalysis.confidence || 0) * 100)}%
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <p className={styles.location}>
+                    <strong>Ubicación:</strong> {aiAnalysis.location}
+                  </p>
+
+                  {/* Risk Categories */}
+                  {aiAnalysis.riskCategories && (
+                    <div className={styles.riskCategories}>
+                      <h4>Categorías de Riesgo</h4>
+                      <div className={styles.categoryGrid}>
+                        <div className={styles.category}>
+                          <span>🌊 Inundación</span>
+                          <span className={styles.badge} data-level={aiAnalysis.riskCategories.flood?.toLowerCase()}>
+                            {aiAnalysis.riskCategories.flood}
+                          </span>
+                        </div>
+                        <div className={styles.category}>
+                          <span>🏗️ Infraestructura</span>
+                          <span className={styles.badge} data-level={aiAnalysis.riskCategories.infrastructure?.toLowerCase()}>
+                            {aiAnalysis.riskCategories.infrastructure}
+                          </span>
+                        </div>
+                        <div className={styles.category}>
+                          <span>👥 Vulnerabilidad Social</span>
+                          <span className={styles.badge} data-level={aiAnalysis.riskCategories.socialVulnerability?.toLowerCase()}>
+                            {aiAnalysis.riskCategories.socialVulnerability}
+                          </span>
+                        </div>
+                        <div className={styles.category}>
+                          <span>💰 Resiliencia Económica</span>
+                          <span className={styles.badge} data-level={aiAnalysis.riskCategories.economicResilience?.toLowerCase()}>
+                            {aiAnalysis.riskCategories.economicResilience}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Key Factors */}
+                  {aiAnalysis.keyFactors && aiAnalysis.keyFactors.length > 0 && (
+                    <div className={styles.keyFactors}>
+                      <h4>Factores Críticos</h4>
+                      <ul>
+                        {aiAnalysis.keyFactors.slice(0, 5).map((factor, idx) => (
+                          <li key={idx}>{factor}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Recommendations */}
+                  {aiAnalysis.recommendations && aiAnalysis.recommendations.length > 0 && (
+                    <div className={styles.recommendations}>
+                      <h4>Recomendaciones Priorizadas</h4>
+                      {aiAnalysis.recommendations.slice(0, 3).map((rec, idx) => (
+                        <div key={idx} className={styles.recommendation} data-priority={rec.priority?.toLowerCase()}>
+                          <div className={styles.recHeader}>
+                            <span className={styles.priority}>{rec.priority}</span>
+                            <span className={styles.timeline}>{rec.timeline}</span>
+                          </div>
+                          <p>{rec.action}</p>
+                          <span className={styles.impact}>
+                            Impacto estimado: <strong>{rec.estimatedImpact}</strong>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Population affected */}
+                  {aiAnalysis.affectedPopulation && (
+                    <div className={styles.population}>
+                      <h4>Población Afectada</h4>
+                      <div className={styles.popStats}>
+                        <div>
+                          <strong>{aiAnalysis.affectedPopulation.total}</strong>
+                          <small>Total</small>
+                        </div>
+                        <div>
+                          <strong>{aiAnalysis.affectedPopulation.highRisk}</strong>
+                          <small>Alto Riesgo</small>
+                        </div>
+                        <div>
+                          <strong>{aiAnalysis.affectedPopulation.vulnerable}</strong>
+                          <small>Vulnerables</small>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Metadata */}
+                  <div className={styles.metadata}>
+                    <small>
+                      Análisis: {new Date(aiAnalysis.analysisDate).toLocaleString('es-CO')}
+                    </small>
+                    <small>
+                      Fuente: {aiAnalysis.dataSource}
+                    </small>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </section>
       </main>
     </div>

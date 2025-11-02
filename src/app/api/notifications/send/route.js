@@ -43,8 +43,8 @@ export async function POST(request) {
     const notificationPayload = JSON.stringify({
       title,
       body,
-      icon: icon || '/icons/icon-192x192.png',
-      badge: '/icons/badge-72x72.png',
+      icon: icon || '/icons/CR-ES-Vertical-RGB.png',
+      badge: '/icons/CR-ES-Horizontal-RGB.png',
       severity: severity || 'medium',
       data: {
         url: data?.url || '/alerts',

@@ -20,7 +20,7 @@ Purpose: Make AI agents productive fast in this repo. Keep answers grounded in T
 - Patterns:
   - Non-streamed: `ollama.chat({ model, messages, stream: false, options })`.
   - Streaming: iterate `for await (const part of response)` in `generateCommunityReport`.
-  - Structured JSON: build Zod schema → `zod-to-json-schema` → call with `format` schema → JSON.parse → Zod.parse.
+  - Structured JSON: build Zod schema → `zod-to-json-schema` → include schema in prompt → call with `format: jsonSchema, options: { temperature: 0 }` → JSON.parse → Zod.parse with error handling.
   - Web-augmented research: `performWebSearch` → synthesize in `conductClimateResearch` with sources.
 
 ## Env & Config

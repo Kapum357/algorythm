@@ -248,32 +248,91 @@ Proporciona:
 /**
  * Generate structured JSON using a provided Zod schema
  * Returns a validated object matching the schema
+ * Best practices: temperature=0, schema in prompt, comprehensive validation
  * @param {Object} input - domain-specific inputs to ground the prompt
  * @returns {Promise<any>} Parsed and validated JSON object
  */
 export async function analyzeStructuredOutput(input) {
   const ollama = createOllamaClient();
 
-  // Define a reusable schema for risk assessment summaries
+  // Enhanced schema with more granular risk assessment
   const RiskAssessment = z.object({
-    location: z.string(),
-    riskLevel: z.enum(['Alto', 'Medio', 'Bajo']),
-    keyFactors: z.array(z.string()).min(1),
-    recommendations: z.array(z.string()).min(1)
+    location: z.string().describe('Nombre de la comunidad o barrio'),
+    riskLevel: z.enum(['Alto', 'Medio', 'Bajo']).describe('Nivel general de riesgo'),
+    confidence: z.number().min(0).max(1).describe('Nivel de confianza del análisis (0-1)'),
+    
+    // Detailed risk breakdown by category
+    riskCategories: z.object({
+      flood: z.enum(['Alto', 'Medio', 'Bajo', 'N/A']).describe('Riesgo de inundación'),
+      infrastructure: z.enum(['Alto', 'Medio', 'Bajo', 'N/A']).describe('Riesgo de infraestructura'),
+      socialVulnerability: z.enum(['Alto', 'Medio', 'Bajo', 'N/A']).describe('Vulnerabilidad social'),
+      economicResilience: z.enum(['Alto', 'Medio', 'Bajo', 'N/A']).describe('Resiliencia económica')
+    }).describe('Desglose de riesgo por categoría'),
+    
+    keyFactors: z.array(z.string()).min(1).max(8).describe('Factores críticos identificados'),
+    
+    // Prioritized recommendations with timeline
+    recommendations: z.array(
+      z.object({
+        action: z.string().describe('Acción recomendada'),
+        priority: z.enum(['Urgente', 'Alta', 'Media', 'Baja']).describe('Nivel de prioridad'),
+        timeline: z.enum(['Inmediato', '1-3 meses', '3-6 meses', '6-12 meses']).describe('Plazo de implementación'),
+        estimatedImpact: z.enum(['Alto', 'Medio', 'Bajo']).describe('Impacto estimado')
+      })
+    ).min(1).max(6).describe('Recomendaciones priorizadas'),
+    
+    // Population impact estimates
+    affectedPopulation: z.object({
+      total: z.number().int().positive().describe('Población total en riesgo'),
+      highRisk: z.number().int().nonnegative().describe('Personas en riesgo alto'),
+      vulnerable: z.number().int().nonnegative().describe('Personas vulnerables (niños, ancianos, etc.)')
+    }).optional().describe('Estimación de población afectada'),
+    
+    // Metadata
+    analysisDate: z.string().describe('Fecha del análisis (ISO 8601)'),
+    dataSource: z.string().describe('Fuente de datos utilizada')
   });
 
   const jsonSchema = zodToJsonSchema(RiskAssessment, 'RiskAssessment');
 
-  const system = `Eres un analista de gestión del riesgo. Responde EXCLUSIVAMENTE en JSON válido que cumpla el esquema dado.`;
-  const user = `Genera un resumen estructurado para la comunidad ${input.location} en Soacha.
-Contexto:
-- Amenazas principales: ${input.threats?.join(', ') || 'inundaciones'}
-- Indicadores: ${JSON.stringify(input.indicators || { noEvac: 62, noSavings: 81, foodInsec: 27 })}
+  // Include schema in prompt for better grounding
+  const system = `Eres un analista experto en gestión del riesgo climático y resiliencia comunitaria urbana.
+Tu tarea es generar evaluaciones de riesgo estructuradas, precisas y accionables.
 
-Requisitos:
-- Usa SOLO este esquema JSON: ${JSON.stringify(jsonSchema)}
+Responde EXCLUSIVAMENTE en JSON válido que cumpla exactamente con el siguiente esquema:
+
+${JSON.stringify(jsonSchema, null, 2)}
+
+IMPORTANTE:
 - No incluyas texto fuera del JSON
-- Campos esperados: location, riskLevel (Alto/Medio/Bajo), keyFactors[], recommendations[]`;
+- Asegúrate de que todos los campos requeridos estén presentes
+- Usa datos contextuales para fundamentar tus análisis
+- Proporciona recomendaciones específicas y priorizadas`;
+
+  const user = `Genera un análisis estructurado de riesgo para la comunidad "${input.location}" en Soacha, Colombia.
+
+**DATOS DE ENTRADA:**
+- Ubicación: ${input.location}
+- Amenazas principales: ${input.threats?.join(', ') || 'inundaciones, infraestructura inadecuada'}
+- Indicadores sociales:
+  ${JSON.stringify(input.indicators || { noEvac: 62, noSavings: 81, foodInsec: 27 }, null, 2)}
+
+**CONTEXTO ADICIONAL:**
+- Zona: Soacha, municipio metropolitano de Bogotá
+- Cuencas: Río Bogotá, Quebrada Tibanica
+- Infraestructura: Mayormente artesanal, alcantarillado deficiente
+- Población: Comunidades vulnerables en asentamientos informales
+
+**REQUISITOS DEL ANÁLISIS:**
+1. Evalúa el riesgo general (Alto/Medio/Bajo) con nivel de confianza
+2. Desglosa riesgos por categoría: inundación, infraestructura, social, económica
+3. Identifica 3-8 factores críticos específicos
+4. Proporciona 3-6 recomendaciones priorizadas con timeline y impacto estimado
+5. Estima población afectada si hay datos suficientes
+6. Incluye fecha de análisis: ${new Date().toISOString()}
+7. Fuente de datos: "AVCA/CRMC Cruz Roja Colombiana - ${input.location}"
+
+Genera el JSON estructurado ahora:`;
 
   const response = await ollama.chat({
     model: OLLAMA_CONFIG.cloudModel,
@@ -283,19 +342,27 @@ Requisitos:
     ],
     stream: false,
     format: jsonSchema,
-    options: { temperature: 0 }
+    options: { 
+      temperature: 0,  // Deterministic output for structured data
+      num_ctx: 8192    // Sufficient context for schema + data
+    }
   });
 
-  // Parse and validate
+  // Parse and validate with detailed error handling
   const raw = response.message?.content || '{}';
   let parsed;
   try {
     parsed = JSON.parse(raw);
-  } catch {
-    throw new Error('Respuesta no es JSON válido');
+  } catch (error) {
+    throw new Error(`Respuesta no es JSON válido: ${error.message}`);
   }
 
-  return RiskAssessment.parse(parsed);
+  // Validate against Zod schema
+  try {
+    return RiskAssessment.parse(parsed);
+  } catch (error) {
+    throw new Error(`JSON no cumple con el esquema: ${error.message}`);
+  }
 }
 
 /**

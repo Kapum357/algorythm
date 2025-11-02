@@ -1,0 +1,19 @@
+<!-- CR-ES-Horizontal-RGB: Cruz Roja (Spain) horizontal RGB logo
+     Uses Nunito Sans for the wordmark; replace with official vector wordmark if available.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" width="1600" height="320" role="img" aria-label="Cruz Roja" preserveAspectRatio="xMinYMid meet">
+  <title>Cruz Roja - CR-ES-Horizontal-RGB</title>
+  <defs>
+    <style type="text/css"><![CDATA[
+      @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap');
+      .word { font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; font-weight:700; font-size:72px; fill:#2E2E2E }
+    ]]></style>
+  </defs>
+  <!-- Isotipo (red cross) -->
+  <g transform="translate(0,8)">
+    <rect x="28" y="12" width="48" height="136" fill="#C8102E" rx="2" />
+    <rect x="-2" y="56" width="136" height="48" fill="#C8102E" rx="2" />
+  </g>
+  <!-- Wordmark -->
+  <text x="180" y="110" class="word">Cruz Roja</text>
+</svg>

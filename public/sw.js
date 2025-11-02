@@ -20,8 +20,8 @@ self.addEventListener('push', (event) => {
   let notificationData = {
     title: 'Alerta DIR-Soacha',
     body: 'Nueva alerta climática',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
+    icon: '/icons/CR-ES-Vertical-RGB.png',
+    badge: '/icons/CR-ES-Horizontal-RGB.png',
     data: { url: '/alerts' }
   };
 
@@ -51,12 +51,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'view',
         title: 'Ver Detalles',
-        icon: '/icons/icon-192x192.png'
+        icon: '/icons/CR-ES-Vertical-RGB.png'
       },
       {
         action: 'close',
         title: 'Cerrar',
-        icon: '/icons/icon-192x192.png'
+        icon: '/icons/CR-ES-Vertical-RGB.png'
       }
     ]
   };

@@ -12,7 +12,6 @@ export default function NavBar() {
     { href: "/alerts", label: "Alertas" },
     { href: "/reports", label: "Reportes" },
     { href: "/monitoring", label: "Monitoreo" },
-    { href: "/ai-demo", label: "🤖 AI Demo", accent: true },
   ];
 
   return (
