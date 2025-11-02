@@ -8,6 +8,67 @@ import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 /**
+ * Process voice queries with conversational AI responses
+ * @param {string} query - User's voice query
+ * @param {string} context - Conversation context
+ * @returns {Promise<string>} Natural language response
+ */
+export async function processVoiceQuery(query, context = "general") {
+  const ollama = createOllamaClient();
+  
+  const systemPrompts = {
+    "climate-resilience-assistant": `Eres un asistente virtual de voz para DIR-Soacha (Dashboard Integrado de Resiliencia).
+Tu rol es ayudar a líderes comunitarios y residentes de El Danubio y La María en Soacha, Colombia.
+
+DATOS CLAVE:
+- 71% de incidencia de inundaciones en la zona
+- 62% no conoce protocolos de evacuación
+- 81% sin ahorros para emergencias
+- Temporadas críticas: Marzo-Junio, Octubre-Noviembre
+- Ríos: Río Bogotá, Quebrada Tibanica
+
+CAPACIDADES:
+- Explicar niveles de alerta (Alto/Medio/Bajo)
+- Guiar en protocolos de evacuación
+- Informar sobre riesgos de inundación
+- Explicar cómo reportar emergencias
+- Responder sobre el sistema AVCA/CRMC
+
+ESTILO DE RESPUESTA:
+- Claro, conciso (máximo 3-4 oraciones)
+- Lenguaje sencillo, sin tecnicismos innecesarios
+- Prioriza seguridad y acción inmediata
+- Amigable y empático
+- Respuestas óptimas para lectura por voz (TTS)`,
+    
+    "general": "Eres un asistente virtual útil y empático. Responde de forma clara y concisa."
+  };
+
+  const systemContent = systemPrompts[context] || systemPrompts.general;
+
+  const response = await ollama.chat({
+    model: OLLAMA_CONFIG.cloudModel,
+    messages: [
+      {
+        role: "system",
+        content: systemContent
+      },
+      {
+        role: "user",
+        content: query
+      }
+    ],
+    stream: false,
+    options: {
+      temperature: OLLAMA_CONFIG.temperature.creative,
+      num_predict: 200, // Limitar respuestas para voz
+    }
+  });
+
+  return response.message.content;
+}
+
+/**
  * Analyze vulnerability data and generate insights
  * @param {Object} data - Vulnerability data from AVCA/CRMC
  * @returns {Promise<string>} Analysis results

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 
@@ -76,7 +77,7 @@ export async function GET() {
     const errorMsg = 'VAPID keys no configuradas correctamente.\n\n' +
                      'Pasos para solucionar:\n' +
                      '1. Ejecuta: npm run generate-vapid-keys\n' +
-                     '2. Verifica que .env.local tenga las keys\n' +
+                     '2. Verifica que .env tenga las keys\n' +
                      '3. Reinicia el servidor: npm run dev';
     
     console.error('❌', errorMsg);

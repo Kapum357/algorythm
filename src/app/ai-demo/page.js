@@ -7,6 +7,7 @@
 
 import { useState } from 'react';
 import OllamaStatus from '@/components/OllamaStatus';
+import ChatBot from '@/components/ChatBot';
 import styles from './page.module.css';
 
 export default function AIDemoPage() {
@@ -164,6 +165,16 @@ export default function AIDemoPage() {
   };
 
   const demos = {
+    chatbot: {
+      title: '💬 Bot Conversacional',
+      description: 'Chatea con el asistente virtual de IA en tiempo real',
+      action: null, // Componente especial
+      data: {
+        'Tipo': 'Chat conversacional con historial',
+        'Contexto': 'Resiliencia climática Soacha',
+        'Capacidades': 'Memoria, acciones rápidas, TTS'
+      }
+    },
     vulnerability: {
       title: '🔍 Análisis de Vulnerabilidades',
       description: 'Analiza datos CRMC/AVCA y genera insights accionables',
@@ -249,32 +260,52 @@ export default function AIDemoPage() {
 
         {/* Demo Content */}
         <section className={styles.demoContent}>
-          <div className={styles.demoInfo}>
-            <h2>{currentDemo.title}</h2>
-            <p className={styles.description}>{currentDemo.description}</p>
-
-            {/* Input Data Preview */}
-            <div className={styles.inputData}>
-              <h3>📊 Datos de Entrada</h3>
-              <dl className={styles.dataList}>
-                {Object.entries(currentDemo.data).map(([key, value]) => (
-                  <div key={key} className={styles.dataItem}>
-                    <dt>{key}:</dt>
-                    <dd>{value}</dd>
-                  </div>
-                ))}
-              </dl>
+          {activeDemo === 'chatbot' ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div className={styles.demoInfo}>
+                <h2>{currentDemo.title}</h2>
+                <p className={styles.description}>{currentDemo.description}</p>
+                <div className={styles.inputData}>
+                  <h3>💡 Características</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
+                    <li>✓ Historial de conversación contextual</li>
+                    <li>✓ Respuestas especializadas en resiliencia climática</li>
+                    <li>✓ Acciones rápidas predefinidas</li>
+                    <li>✓ Síntesis de voz (TTS) integrada</li>
+                    <li>✓ Modo compacto para integración</li>
+                  </ul>
+                </div>
+              </div>
+              <ChatBot context="climate-resilience-assistant" />
             </div>
+          ) : (
+            <div className={styles.demoInfo}>
+              <h2>{currentDemo.title}</h2>
+              <p className={styles.description}>{currentDemo.description}</p>
 
-            {/* Run Button */}
-            <button
-              className={styles.runButton}
-              onClick={currentDemo.action}
-              disabled={loading}
-            >
-              {loading ? '⏳ Analizando con IA...' : '▶️ Ejecutar Análisis'}
-            </button>
-          </div>
+              {/* Input Data Preview */}
+              <div className={styles.inputData}>
+                <h3>📊 Datos de Entrada</h3>
+                <dl className={styles.dataList}>
+                  {Object.entries(currentDemo.data).map(([key, value]) => (
+                    <div key={key} className={styles.dataItem}>
+                      <dt>{key}:</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              {/* Run Button */}
+              <button
+                className={styles.runButton}
+                onClick={currentDemo.action}
+                disabled={loading}
+              >
+                {loading ? '⏳ Analizando con IA...' : '▶️ Ejecutar Análisis'}
+              </button>
+            </div>
+          )}
 
           {/* Results */}
           {(result || streamText || structured) && (
@@ -284,7 +315,7 @@ export default function AIDemoPage() {
                   <h3>❌ Error</h3>
                   <p>{result?.error}</p>
                   <small>
-                    Asegúrate de que OLLAMA_API_KEY esté configurada en .env.local
+                    Asegúrate de que OLLAMA_API_KEY esté configurada en .env
                   </small>
                 </div>
               ) : (

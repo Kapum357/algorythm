@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 import { getSubscriptions } from '../subscribe/route';

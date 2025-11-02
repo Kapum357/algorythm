@@ -5,16 +5,41 @@ const nextConfig = {
   
   // Headers para permitir Service Workers y CSP
   async headers() {
-    const isDev = nextConfig.env !== 'production';
+    // usar NODE_ENV para detectar desarrollo/producción
+    const isDev = process.env.NODE_ENV !== 'production';
+    // Cabeceras permisivas para permitir todo el tráfico entrante
+    const permissiveCsp = "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; " +
+      "script-src * 'unsafe-inline' 'unsafe-eval'; " +
+      "style-src * 'unsafe-inline'; " +
+      "img-src * data: blob:; " +
+      "font-src * data:; " +
+      "connect-src *; " +
+      "frame-src *; " +
+      "worker-src * blob:;";
+
     return [
       {
         source: '/:path*',
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: isDev
-              ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://ollama.com https://nominatim.openstreetmap.org; worker-src 'self' blob:;"
-              : "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://ollama.com https://nominatim.openstreetmap.org; worker-src 'self' blob:;",
+            value: permissiveCsp,
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
           },
           {
             key: 'Service-Worker-Allowed',

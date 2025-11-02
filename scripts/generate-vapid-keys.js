@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-env node */
 // Script para generar llaves VAPID para notificaciones push
 const webpush = require('web-push');
 const fs = require('fs');
@@ -9,7 +11,7 @@ console.log('Generando llaves VAPID para notificaciones push...\n');
 const vapidKeys = webpush.generateVAPIDKeys();
 
 console.log('✅ Llaves VAPID generadas exitosamente!\n');
-console.log('Copia estas llaves en tu archivo .env.local:\n');
+console.log('Copia estas llaves en tu archivo .env:\n');
 console.log('─'.repeat(70));
 console.log(`NEXT_PUBLIC_VAPID_PUBLIC_KEY=${vapidKeys.publicKey}`);
 console.log(`VAPID_PRIVATE_KEY=${vapidKeys.privateKey}`);
@@ -22,12 +24,12 @@ console.log('   - Guarda estas llaves de forma segura');
 console.log('   - Si pierdes las llaves, deberás regenerarlas y los usuarios');
 console.log('     tendrán que volver a suscribirse\n');
 
-// Intentar escribir en .env.local si no existe
-const envPath = path.join(__dirname, '..', '.env.local');
-const envExamplePath = path.join(__dirname, '..', '.env.local.example');
+// Intentar escribir en .env si no existe
+const envPath = path.join(__dirname, '..', '.env');
+const envExamplePath = path.join(__dirname, '..', '.env.example');
 
 try {
-  // Si no existe .env.local, crearlo
+  // Si no existe .env, crearlo
   if (!fs.existsSync(envPath)) {
     const envContent = `# Ollama AI Configuration
 OLLAMA_API_KEY=your_api_key_here
@@ -41,13 +43,13 @@ VAPID_EMAIL=mailto:admin@dir-soacha.org
 `;
     
     fs.writeFileSync(envPath, envContent);
-    console.log('✅ Archivo .env.local creado con las llaves VAPID\n');
+    console.log('✅ Archivo .env creado con las llaves VAPID\n');
   } else {
-    console.log('ℹ️  El archivo .env.local ya existe.');
+    console.log('ℹ️  El archivo .env ya existe.');
     console.log('   Por favor, añade manualmente las llaves VAPID mostradas arriba.\n');
   }
 
-  // Crear o actualizar .env.local.example
+  // Crear o actualizar .env.example
   const exampleContent = `# Ollama AI Configuration
 OLLAMA_API_KEY=your_api_key_here
 OLLAMA_HOST=https://ollama.com
@@ -61,15 +63,15 @@ VAPID_EMAIL=mailto:admin@dir-soacha.org
 `;
   
   fs.writeFileSync(envExamplePath, exampleContent);
-  console.log('✅ Archivo .env.local.example actualizado\n');
+  console.log('✅ Archivo .env.example actualizado\n');
 
 } catch (error) {
   console.error('❌ Error al crear archivos .env:', error.message);
-  console.log('   Por favor, crea el archivo .env.local manualmente.\n');
+  console.log('   Por favor, crea el archivo .env manualmente.\n');
 }
 
 console.log('🚀 Próximos pasos:');
-console.log('   1. Verifica que .env.local tenga las llaves VAPID');
+console.log('   1. Verifica que .env tenga las llaves VAPID');
 console.log('   2. Reinicia el servidor de desarrollo: npm run dev');
 console.log('   3. Ve a http://localhost:3000/alerts');
 console.log('   4. Haz clic en "Activar Notificaciones"');

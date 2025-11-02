@@ -15,7 +15,7 @@ export function createOllamaClient() {
   const apiKey = process.env.OLLAMA_API_KEY;
   
   if (!apiKey || apiKey === 'your_api_key_here') {
-    console.warn('⚠️  Ollama API key not configured. Please set OLLAMA_API_KEY in .env.local');
+    console.warn('⚠️  Ollama API key not configured. Please set OLLAMA_API_KEY in .env');
     console.warn('📝 Get your API key from: https://ollama.com/settings/keys');
   }
 

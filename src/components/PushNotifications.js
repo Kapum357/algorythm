@@ -159,7 +159,7 @@ export default function PushNotifications() {
       if (error.name === "AbortError" || errorMessage.includes("push service error")) {
         errorMessage = "❌ Error del servicio push.\n\n" +
                       "Soluciones:\n" +
-                      "1. Verifica que las VAPID keys estén en .env.local\n" +
+                      "1. Verifica que las VAPID keys estén en .env\n" +
                       "2. Reinicia completamente el servidor (Ctrl+C y npm run dev)\n" +
                       "3. Limpia el cache del navegador (Ctrl+Shift+Del)\n" +
                       "4. En DevTools > Application > Service Workers > Unregister\n" +

@@ -16,7 +16,7 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         configured: false,
-        message: 'Ollama API key not configured. Set OLLAMA_API_KEY in .env.local'
+        message: 'Ollama API key not configured. Set OLLAMA_API_KEY in .env'
       });
     }
 

@@ -36,7 +36,7 @@ Este proyecto ahora incluye **capacidades de Inteligencia Artificial** mediante 
 1. **Configura tu API Key de Ollama**:
 
    ```bash
-   # Crea .env.local y agrega:
+   # Crea .env y agrega:
    OLLAMA_API_KEY=tu_api_key_aqui
    ```
 

@@ -51,12 +51,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'view',
         title: 'Ver Detalles',
-        icon: '/icons/view-icon.png'
+        icon: '/icons/icon-192x192.png'
       },
       {
         action: 'close',
         title: 'Cerrar',
-        icon: '/icons/close-icon.png'
+        icon: '/icons/icon-192x192.png'
       }
     ]
   };

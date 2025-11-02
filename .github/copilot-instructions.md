@@ -1,246 +1,48 @@
-# DIR-Soacha: AI Coding Agent Instructions
+# DIR-Soacha – AI Agent Working Notes (Next.js 16)
 
-## Project Overview
-**DIR-Soacha** (Dashboard Integrado de Resiliencia) is a Next.js 16 web application built for Cruz Roja Colombiana to analyze climate resilience in Soacha's vulnerable communities (El Danubio, La María). The platform integrates geospatial visualization with AI-powered analysis using Ollama Cloud to transform AVCA/CRMC vulnerability data into actionable intelligence for community leaders and emergency responders.
+Purpose: Make AI agents productive fast in this repo. Keep answers grounded in THESE patterns and files.
 
-**Core Mission**: Empower non-technical users to visualize flood risks, assess population impact, and generate emergency response plans through an intuitive dashboard with AI assistance.
+## Architecture & Data Flow
+- Framework: Next.js 16 (App Router in `src/app/`), React 19.2; all pages are client components (`"use client"`). React Compiler enabled in `next.config.mjs`.
+- Flow: Client component → fetch(`/api/*`) → API route (`src/app/api/**/route.js`) → service in `src/lib/*` → external API (Ollama Cloud) → JSON to client.
+- Server-only code: `src/lib/ollama-*.js` must be imported ONLY in API routes (never in client components).
 
-## Architecture & Tech Stack
+## Key Folders (read these first)
+- `src/lib/ollama-config.js`: creates Ollama client, reads env, model defaults. Exports `createOllamaClient`, `OLLAMA_CONFIG`, `isOllamaConfigured`.
+- `src/lib/ollama-service.js`: AI capabilities: `processVoiceQuery`, `analyzeVulnerability`, `assessFloodRisk`, `generateEmergencyResponse`, `predictRiskPatterns`, `analyzeStructuredOutput` (Zod), `generateCommunityReport` (stream), `performWebSearch`, `fetchWebPage`, `conductClimateResearch`, `testConnection`.
+- `src/app/api/ollama/*/route.js`: One endpoint per capability. Present routes include: `analyze`, `flood-risk`, `emergency`, `predict`, `structured`, `research`, `status`, `chat-bot`, `voice`, `web-search`, `web-fetch`, `zone-analysis`.
+- Other API routes: `src/app/api/chat/route.js`. Web Push: `src/app/api/notifications/{subscribe,send}/route.js` with service worker `public/sw.js`.
+- Demos/UI: `src/app/ai-demo/page.js` shows client→API patterns; components in `src/components/` (`OllamaStatus`, `ChatBot`, `InteractiveMap`, etc.).
 
-### Framework & Routing
-- **Next.js 16** with App Router (`src/app/` directory structure)
-- All pages are **client-side rendered** (`"use client"` directive) - no SSR/SSG currently implemented
-- React 19.2 with experimental React Compiler enabled (`next.config.mjs`)
+## AI Integration
+- Library: `ollama` cloud client via `createOllamaClient()`; adds `Authorization: Bearer ${OLLAMA_API_KEY}` when present.
+- Model selection: `OLLAMA_CONFIG.cloudModel = process.env.NEXT_PUBLIC_OLLAMA_MODEL || "gpt-oss:120b-cloud"` (fallback label `glm-4.6:cloud`).
+- Patterns:
+  - Non-streamed: `ollama.chat({ model, messages, stream: false, options })`.
+  - Streaming: iterate `for await (const part of response)` in `generateCommunityReport`.
+  - Structured JSON: build Zod schema → `zod-to-json-schema` → call with `format` schema → JSON.parse → Zod.parse.
+  - Web-augmented research: `performWebSearch` → synthesize in `conductClimateResearch` with sources.
 
-### Key Directories
-```
-src/
-  app/              # Pages & API routes (App Router)
-    api/ollama/     # 9 AI service endpoints (analyze, flood-risk, emergency, etc.)
-    dashboard/      # Main resilience dashboard
-    alerts/         # Real-time alert system with Lottie animations
-    impact/         # Population impact analysis
-    ai-demo/        # Interactive AI capabilities demo
-  lib/              # Core services
-    ollama-service.js   # 13 AI functions (analyzeVulnerability, assessFloodRisk, etc.)
-    ollama-config.js    # Ollama Cloud client setup
-  components/       # Reusable React components (OllamaStatus, etc.)
-```
+## Env & Config
+- Create `.env` (or run `npm run generate-vapid-keys` to scaffold) with:
+  - `OLLAMA_API_KEY` (required for cloud calls)
+  - `OLLAMA_HOST` (default `https://ollama.com`)
+  - `NEXT_PUBLIC_OLLAMA_MODEL` (default `gpt-oss:120b-cloud`)
+  - Push: `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_EMAIL`
+- Headers/CSP: `next.config.mjs` sets permissive CSP and `Service-Worker-Allowed: /`.
 
-### AI Integration (Ollama Cloud)
-- **Primary Model**: `gpt-oss:120b-cloud` via Ollama Cloud API
-- **Service Layer**: `src/lib/ollama-service.js` exports 13 specialized functions:
-  - `analyzeVulnerability()` - AVCA/CRMC data analysis
-  - `assessFloodRisk()` - Geographic risk evaluation
-  - `generateEmergencyResponse()` - Incident response plans
-  - `predictRiskPatterns()` - Temporal pattern detection
-  - `analyzeStructuredOutput()` - Zod schema validation
-  - `generateCommunityReport()` - Streaming report generation
-  - `performWebSearch()` / `fetchWebPage()` - External data integration
-- **Configuration**: Requires `OLLAMA_API_KEY` in `.env.local` (see README_OLLAMA.md)
-- **API Routes**: All AI endpoints follow pattern `/api/ollama/{action}/route.js` with POST handlers
+## Build/Run Workflows
+- Dev: `npm run dev` (check `/ai-demo` for AI features; `/alerts` for push).
+- Build/Start: `npm run build`; `npm start`.
+- Push setup: `npm run generate-vapid-keys` → restart dev server → enable on `/alerts`.
+- Lint: `npm run lint` (ESLint 9). TypeScript config exists; most code is JS.
 
-## Development Workflows
+## UI & Styling Conventions
+- CSS Modules per page/component (`*.module.css`).
+- Tokens: `src/app/globals.css` (light-only). Use semantic vars: `var(--color-surface)`, `var(--color-border)`, text utilities `.text-h1..text-caption`; helper `.btn`, `.card`. Card radius: 12px; spacing 16/24px.
 
-### Running the Application
-```bash
-npm run dev    # Start dev server on http://localhost:3000
-npm run build  # Production build (also available as VS Code task)
-npm start      # Run production server
-```
-
-### Environment Setup
-1. Copy `.env.local.example` to `.env.local` (if exists) or create new:
-   ```
-   OLLAMA_API_KEY=your_api_key_here
-   OLLAMA_HOST=https://ollama.com
-   NEXT_PUBLIC_OLLAMA_MODEL=gpt-oss:120b-cloud
-   ```
-2. Get API key from https://ollama.com/settings/keys
-3. Test connection at http://localhost:3000/ai-demo
-
-### Testing AI Features
-- Visit `/ai-demo` page for interactive testing of all AI capabilities
-- Check `<OllamaStatus>` component for real-time connection status
-- All AI endpoints return JSON with `{ success, analysis/recommendations, timestamp }` structure
-
-## Project-Specific Conventions
-
-### Component Patterns
-1. **All pages use `"use client"`** - No server components currently in use. When creating new pages:
-   ```javascript
-   "use client";
-   import styles from "./page.module.css";
-   export default function PageName() { /* ... */ }
-   ```
-
-2. **CSS Modules everywhere** - Each component/page has dedicated `.module.css`:
-   - Import as `styles` object
-   - Use semantic class names: `styles.container`, `styles.card`, `styles.main`
-   - Global tokens in `src/app/globals.css` and `src/app/tokens.js`
-
-3. **Design System** - Cruz Roja branding colors defined in globals.css:
-   - Primary red: `var(--color-rojo-oficial)` (#C8102E)
-   - Light mode by default with dark mode support via CSS custom properties
-   - Typography styles exported from `src/app/tokens.js` (TEXT_STYLES object)
-
-### CSS Architecture & Design Tokens
-
-**Global Tokens System** (`src/app/globals.css`):
-```css
-/* CSS Custom Properties - LIGHT THEME ALWAYS ACTIVE */
---color-rojo-oficial: #c8102e;        /* Cruz Roja institutional red */
---color-background: #ffffff;           /* White background */
---color-surface: #f8f8f8;              /* Off-white surface (cards, sidebars) */
---color-text-primary: #333333;         /* Dark gray text */
---color-text-secondary: #6e6e6e;       /* Medium gray text */
---color-primary: #c8102e;              /* Brand red (Cruz Roja) */
---color-secondary: #007bff;            /* Blue for interactive elements */
---color-border: #dadada;               /* Light gray borders */
---color-error: #c8102e;                /* Error state (Cruz Roja red) */
---color-success: #2e7d32;              /* Success state (green) */
---color-alert: #ffd700;                /* Alert/warning state (yellow) */
---gradient-accent-start / --gradient-accent-end /* For AI demo gradient buttons */
-```
-
-**Typography Tokens** (utility classes + CSS variables):
-```css
-/* Available utility classes in globals.css */
-.text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6
-.text-body1, .text-body2    /* Body text sizes */
-.text-caption               /* Small text (12px) */
-.text-button                /* Uppercase button text */
-
-/* CSS Variables for manual use */
---h1-size: 3rem; --h1-weight: 700; --h1-line: 1.2;
---body1-size: 1rem; --body1-weight: 400; --body1-line: 1.6;
-/* ... and more (see globals.css lines 93-126) */
-```
-
-**CSS Module Pattern** (every `.module.css` file):
-```css
-/* Example: src/app/dashboard/page.module.css */
-.layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  background: var(--color-background);  /* Uses global token */
-  color: var(--color-text-primary);
-}
-
-.sidebar {
-  border-right: 1px solid var(--color-border);
-  background: var(--color-surface);
-}
-
-.statCard {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;  /* Standard 12px radius for cards */
-  padding: 16px;
-}
-```
-
-**Key CSS Conventions**:
-- **Card containers**: 12px border-radius, `var(--color-surface)` background, 1px `var(--color-border)`
-- **Grid layouts**: Most pages use CSS Grid (not Flexbox) for main layouts
-- **Responsive**: `@media (max-width: 900px)` breakpoint for mobile
-- **Spacing**: 16px/24px for padding/gaps (consistent across files)
-- **Dark mode**: DISABLED - Light theme is always active (dark mode media query commented out)
-- **Typography**: Use utility classes (`.text-h3`) in JSX or CSS variables in `.module.css`
-- **Color tokens**: Always use CSS variables (`var(--color-*)`) that reference light theme values
-
-**Common CSS Module Classes** (patterns repeated across pages):
-```css
-.layout      /* Top-level page grid container */
-.sidebar     /* Side navigation or filters panel */
-.main        /* Primary content area */
-.mapCard     /* Map container with border-radius */
-.map         /* iframe for Google Maps embed */
-.stats       /* Grid of stat cards (3 columns) */
-.statCard    /* Individual metric card */
-.statValue   /* Large bold number (font: 700 1.75rem) */
-```
-
-### AI Service Integration Pattern
-When adding new AI features:
-
-1. **Create service function** in `src/lib/ollama-service.js`:
-   ```javascript
-   export async function myNewAnalysis(data) {
-     const ollama = createOllamaClient();
-     const response = await ollama.chat({
-       model: OLLAMA_CONFIG.cloudModel,
-       messages: [
-         { role: "system", content: "Expert persona..." },
-         { role: "user", content: prompt }
-       ],
-       stream: false,
-       options: { temperature: OLLAMA_CONFIG.temperature.analysis }
-     });
-     return response.message.content;
-   }
-   ```
-
-2. **Create API route** in `src/app/api/ollama/{action}/route.js`:
-   ```javascript
-   import { NextResponse } from 'next/server';
-   import { myNewAnalysis } from '@/lib/ollama-service';
-
-   export async function POST(request) {
-     const data = await request.json();
-     const analysis = await myNewAnalysis(data);
-     return NextResponse.json({ success: true, analysis, timestamp: new Date().toISOString() });
-   }
-   ```
-
-3. **Call from client** using fetch:
-   ```javascript
-   const response = await fetch('/api/ollama/{action}', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify(inputData)
-   });
-   ```
-
-### Data Flow Architecture
-```
-User Interaction → Client Component → API Route (/api/ollama/*) → ollama-service.js → Ollama Cloud → Response
-```
-
-**Key Points**:
-- All AI calls go through server-side API routes (never expose API keys to client)
-- `ollama-service.js` is imported ONLY by API routes (server-side)
-- `ollama-config.js` reads environment variables via `process.env`
-- Client components fetch API routes using standard `fetch()` API
-
-### Lottie Animations
-The `/alerts` page uses Lottie animations for weather visuals:
-- Animations stored in `public/animations/` (Rainy.json, Weather-storm.json, etc.)
-- Dynamically loads `@lottiefiles/lottie-player` web component via CDN
-- Pattern: Check if component defined, load script if needed, wait for `customElements.whenDefined()`
-
-### Navigation Structure
-- Global header in `src/app/layout.js` with institutional branding
-- Dashboard sidebar navigation in `src/app/dashboard/page.js`
-- Main sections: `/` (home), `/dashboard`, `/alerts`, `/impact`, `/reports`, `/monitoring`, `/ai-demo`
-
-## Common Pitfalls & Solutions
-
-### Environment Variables
-**Problem**: AI calls fail with authentication errors  
-**Solution**: Ensure `.env.local` exists with valid `OLLAMA_API_KEY`. Never commit this file.
-
-### Client/Server Boundary
-**Problem**: "Module not found" errors when importing `ollama-service.js` in client components  
-**Solution**: `ollama-service.js` is server-only. Always import it in API routes (`/api/ollama/*`), not in client components.
-
-### CSS Modules
-**Problem**: Styles not applying  
-**Solution**: Verify CSS Module import (`import styles from "./page.module.css"`) and use dot notation (`styles.className`).
-
-### API Route Patterns
-All Ollama API routes follow this structure:
-```javascript
+## API Route Pattern
+```js
 // /api/ollama/{action}/route.js
 import { NextResponse } from 'next/server';
 import { specificFunction } from '@/lib/ollama-service';
@@ -249,63 +51,19 @@ export async function POST(request) {
   try {
     const data = await request.json();
     const result = await specificFunction(data);
-    return NextResponse.json({ success: true, result, timestamp: new Date().toISOString() });
+    return NextResponse.json({ success: true, ...shape(result), timestamp: new Date().toISOString() });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 ```
+- Shape result to match existing clients (see `ai-demo`): `{ analysis }`, `{ assessment }`, `{ recommendations }`, or `{ result }`.
 
-## Important Context
-- **Domain**: Climate resilience for Soacha, Colombia (El Danubio & La María communities)
-- **Target Users**: Community leaders, Red Cross volunteers (non-technical)
-- **Data Sources**: AVCA/CRMC vulnerability assessments, IDEAM climate data, DANE demographics
-- **Key Metrics**: 62% no evacuation knowledge, 81% no emergency savings, 71% flood incidence
-- **Geographic Focus**: Río Bogotá, Quebrada Tibanica flood zones
+## Pitfalls to avoid
+- Importing `ollama-service.js` in client components.
+- Missing `OLLAMA_API_KEY` (see `<OllamaStatus />` or `/api/ollama/status`).
+- Push without VAPID keys or unregistered service worker.
 
-## Quick Reference
+Good references: `src/app/ai-demo/page.js`, `src/lib/ollama-config.js`, `src/lib/ollama-service.js`.
 
-### Adding a New Page
-1. Create `src/app/{route}/page.js` with `"use client"` directive
-2. Create corresponding `page.module.css` for styles
-3. Add navigation link in `src/app/layout.js` header or dashboard sidebar
-
-### Creating AI Endpoint
-1. Add function to `src/lib/ollama-service.js`
-2. Create route at `src/app/api/ollama/{name}/route.js`
-3. Import and call in client component via fetch
-
-### Using Design Tokens
-```javascript
-// In CSS Modules (.module.css files)
-.element { 
-  color: var(--color-rojo-oficial); 
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-}
-
-// In JSX (inline styles) - import from tokens.js
-import { COLORS, TEXT_STYLES } from '@/app/tokens';
-
-<div style={{ 
-  color: COLORS["Rojo oficial"],
-  fontSize: TEXT_STYLES.heading2.fontSize 
-}}>
-
-// In JSX (utility classes) - use globals.css classes
-<h2 className="text-h2">Título</h2>
-<p className="text-body1">Contenido principal</p>
-<small className="text-caption">Texto pequeño</small>
-```
-
-### Testing Changes
-```bash
-npm run dev              # Always verify in browser
-# Check /ai-demo for AI features
-# Check browser console for errors
-```
-
----
-
-**For detailed setup**: See README.md and README_OLLAMA.md  
-**For examples**: Check `src/app/ai-demo/page.js` and `src/lib/ollama-service.js`
+If any section needs more depth (e.g., exact response shapes per route), say which route to expand and we’ll add it.

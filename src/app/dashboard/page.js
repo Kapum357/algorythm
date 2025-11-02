@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./page.module.css";
-import InteractiveMap from "@/components/InteractiveMap";
+import VoiceAssistant from "@/components/VoiceAssistant";
+// InteractiveMap import removed (not used) to satisfy linter
 
 export default function DashboardPrincipal() {
   const iframeRef = useRef(null);
@@ -30,7 +31,7 @@ export default function DashboardPrincipal() {
     try {
       ro = new ResizeObserver(resize);
       if (cardRef.current) ro.observe(cardRef.current);
-    } catch (e) {
+    } catch {
       // ResizeObserver may not be available in old browsers; window resize covers most cases
     }
 
@@ -54,13 +55,21 @@ export default function DashboardPrincipal() {
           <Link href="/reports" className={pathname === "/reports" ? styles.activeLink : undefined}>🗂️ Reportes</Link>
           <Link href="/impact" className={pathname === "/impact" ? styles.activeLink : undefined}>📊 Análisis</Link>
           <Link href="/communities" className={pathname === "/communities" ? styles.activeLink : undefined}>👥 Comunidades</Link>
+          <Link href="/assistant" className={pathname === "/assistant" ? styles.activeLink : undefined}>🎤 Asistente</Link>
         </nav>
+        
+        <div className={styles.voiceWidget}>
+          <VoiceAssistant compact />
+        </div>
       </aside>
 
       {/* Main content: embedded Looker Studio iframe (keeps sidebar) */}
       <main className={styles.main}>
         <header>
           <h1 className="text-h3">Resiliencia Climática Urbana</h1>
+          <p className="text-body2" style={{ color: "var(--color-text-secondary)", marginTop: 8 }}>
+            Panel integrado de análisis de vulnerabilidad y riesgo climático
+          </p>
         </header>
   <section ref={cardRef} className={styles.mapCard}>
           <iframe
