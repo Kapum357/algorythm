@@ -1,6 +1,7 @@
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import NavBar from "../components/NavBar";
+import ContactBubble from "../components/ContactBubble";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
           <NavBar />
         </header>
         {children}
+        <ContactBubble />
       </body>
     </html>
   );
