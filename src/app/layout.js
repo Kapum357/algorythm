@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import NavBar from "../components/NavBar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,13 +33,7 @@ export default function RootLayout({ children }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontWeight: 800, fontSize: 16 }}>Cruz Roja Colombiana</span>
           </div>
-          <nav aria-label="Primary navigation">
-            <a href="/" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Inicio</a>
-            <a href="/dashboard" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Panel</a>
-            <a href="/reports" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Reportes</a>
-            <a href="/monitoring" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Monitoreo</a>
-            <a href="/ai-demo" style={{ color: "var(--color-on-primary)", background: "linear-gradient(135deg, var(--gradient-accent-start) 0%, var(--gradient-accent-end) 100%)", padding: "4px 12px", borderRadius: "4px" }}>🤖 AI Demo</a>
-          </nav>
+          <NavBar />
         </header>
         {children}
       </body>

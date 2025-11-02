@@ -3,7 +3,8 @@
 .layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  min-height: 100vh;
+  height: 100vh; /* lock viewport height to avoid page-level scroll */
+  overflow: hidden; /* prevent the overall page from scrolling */
   background: var(--color-background);
   color: var(--color-text-primary);
 }
@@ -31,8 +32,10 @@
 
 .main {
   padding: 24px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 24px;
+  overflow: hidden; /* keep children from pushing page scroll */
 }
 
 .mapCard {
@@ -40,12 +43,28 @@
   border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
+  /* Let the card grow to fill remaining space in the .main flex column */
+  flex: 1 1 auto;
+  min-height: 0; /* allow flex children to size down (prevents overflowing) */
 }
 
 .map {
   width: 100%;
-  height: 420px;
+  height: 100%;
   border: 0;
+  display: block;
+  /* Hide native scrollbars on the iframe element itself (clips overflow). Note: this does not affect
+     the embedded document's internal scrollbars if it explicitly shows them; cross-origin content
+     cannot be changed from the parent page. */
+  overflow: hidden;
+}
+
+/* More explicit selector for iframes inside mapCard */
+.mapCard > iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
 }
 
 .stats {
@@ -54,18 +73,24 @@
   gap: 16px;
 }
 
-.statCard {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 16px;
+.map {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  min-height: 0;
 }
 
-.statLabel { color: var(--color-text-secondary); }
-.statValue { font: 700 1.75rem/1 var(--font-primary); margin-top: 8px; }
+/* Ensure direct iframe child fills the card and is clipped rather than creating scrollbars */
+.mapCard > iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
 
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { position: sticky; top: 0; z-index: 5; }
-  .stats { grid-template-columns: 1fr; }
+/* Make sure document and root containers don't add extra height */
+:global(html), :global(body), :global(#__next) {
+  height: 100%;
+  margin: 0;
 }

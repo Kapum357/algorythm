@@ -1,8 +1,44 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./page.module.css";
 
 export default function DashboardPrincipal() {
+  const iframeRef = useRef(null);
+  const cardRef = useRef(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    function resize() {
+      if (iframeRef.current && cardRef.current) {
+        // Set iframe height to fill the wrapper exactly
+        iframeRef.current.style.height = `${cardRef.current.clientHeight}px`;
+      }
+    }
+
+    // Initial resize
+    resize();
+
+    // Resize on window resize
+    window.addEventListener("resize", resize);
+
+    // Observe wrapper size changes (safer for dynamic layout)
+    let ro = null;
+    try {
+      ro = new ResizeObserver(resize);
+      if (cardRef.current) ro.observe(cardRef.current);
+    } catch (e) {
+      // ResizeObserver may not be available in old browsers; window resize covers most cases
+    }
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      if (ro) ro.disconnect();
+    };
+  }, []);
+
   return (
     <div className={styles.layout}>
       {/* Sidebar nav */}
@@ -12,49 +48,31 @@ export default function DashboardPrincipal() {
           <small>Soacha</small>
         </div>
         <nav className={styles.menu} aria-label="Secciones">
-          <a href="/dashboard">🏠 Inicio</a>
-          <a href="/alerts">🔔 Alertas</a>
-          <a href="#">🗂️ Reportes</a>
-          <a href="/impact">📊 Análisis</a>
-          <a href="#">👥 Comunidades</a>
+          <Link href="/dashboard" className={pathname === "/dashboard" ? styles.activeLink : undefined}>🏠 Inicio</Link>
+          <Link href="/alerts" className={pathname === "/alerts" ? styles.activeLink : undefined}>🔔 Alertas</Link>
+          <Link href="/reports" className={pathname === "/reports" ? styles.activeLink : undefined}>🗂️ Reportes</Link>
+          <Link href="/impact" className={pathname === "/impact" ? styles.activeLink : undefined}>📊 Análisis</Link>
+          <Link href="/communities" className={pathname === "/communities" ? styles.activeLink : undefined}>👥 Comunidades</Link>
         </nav>
       </aside>
 
-      {/* Main content */}
+      {/* Main content: embedded Looker Studio iframe (keeps sidebar) */}
       <main className={styles.main}>
         <header>
           <h1 className="text-h3">Resiliencia Climática Urbana</h1>
         </header>
-
-        <section className={styles.mapCard}>
+  <section ref={cardRef} className={styles.mapCard}>
           <iframe
+            ref={iframeRef}
             className={styles.map}
-            title="Mapa de Soacha"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3986.745019894008!2d-74.231!3d4.585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9ed3d8e5c7d1%3A0x9d63e8cb2e0b9b0a!2sSoacha%2C%20Cundinamarca!5e0!3m2!1ses!2sCO!4v1699999999999"
+            title="Looker Studio - Panel de Resiliencia"
+            src="https://lookerstudio.google.com/embed/reporting/8d93aad0-7396-47b7-902b-2799ec917ccc/page/p_v4y9yvcqxd"
+            frameBorder="0"
+            scrolling="no"
+            style={{ border: 0 }}
             allowFullScreen
+            sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           />
-        </section>
-
-        <section aria-labelledby="resumen">
-          <h2 id="resumen" className="text-h5" style={{ marginBottom: 8 }}>
-            Resumen
-          </h2>
-          <div className={styles.stats}>
-            <article className={styles.statCard}>
-              <div className="text-caption">Impacto Poblacional</div>
-              <div className={styles.statValue}>120,000</div>
-            </article>
-            <article className={styles.statCard}>
-              <div className="text-caption">Alertas Activas</div>
-              <div className={styles.statValue}>5</div>
-            </article>
-            <article className={styles.statCard}>
-              <div className="text-caption">Reportes Recientes</div>
-              <div className={styles.statValue}>20</div>
-            </article>
-          </div>
         </section>
       </main>
     </div>
