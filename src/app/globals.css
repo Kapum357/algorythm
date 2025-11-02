@@ -22,10 +22,9 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Force light color scheme */
+html {
+  color-scheme: light;
 }
 
 /* === Design Tokens (CSS Custom Properties) === */
@@ -52,6 +51,13 @@ a {
   --color-light-info: #007bff;
   --color-light-error: #c8102e;
   --color-light-success: #2e7d32; /* verde accesible */
+  
+  /* On-color tokens (text color on colored backgrounds) */
+  --color-light-on-primary: #ffffff;
+  --color-light-on-secondary: #ffffff;
+  --color-light-on-success: #ffffff;
+  --color-light-on-alert: #333333;
+  --color-light-on-error: #ffffff;
 
   /* Tokens semánticos (apuntan a claro por defecto) */
   --color-background: var(--color-light-background);
@@ -72,6 +78,8 @@ a {
   --color-on-primary: var(--color-light-on-primary);
   --color-on-secondary: var(--color-light-on-secondary);
   --color-on-success: var(--color-light-on-success);
+  --color-on-alert: var(--color-light-on-alert);
+  --color-on-error: var(--color-light-on-error);
 
   /* Accent gradient stops (can be themed) */
   --gradient-accent-start: var(--color-secondary);
@@ -131,24 +139,12 @@ a {
   --button-text-line: 1.2;
 }
 
+/* Dark mode disabled - Light theme is always active */
+/* To enable dark mode in the future, uncomment the media query below */
+
+/*
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Paleta modo oscuro */
-    --color-dark-background: #121212;
-    --color-dark-surface: #1e1e1e;
-    --color-dark-text-primary: #ffffff;
-    --color-dark-text-secondary: #cccccc;
-    --color-dark-primary: #ff4136;
-    --color-dark-primary-hover: #ff5c5c;
-    --color-dark-secondary: #339cff;
-    --color-dark-secondary-hover: #66bfff;
-    --color-dark-border: #333333;
-    --color-dark-alert: #ffd700;
-    --color-dark-info: #339cff;
-    --color-dark-error: #ff4136;
-  --color-dark-success: #6dd36d;
-
-    /* Reasignar tokens semánticos a oscuro */
     --color-background: var(--color-dark-background);
     --color-surface: var(--color-dark-surface);
     --color-text-primary: var(--color-dark-text-primary);
@@ -162,28 +158,14 @@ a {
     --color-info: var(--color-dark-info);
     --color-error: var(--color-dark-error);
     --color-success: var(--color-dark-success);
-
-    /* On-color semantic tokens */
-    --color-on-primary: var(--color-dark-on-primary);
-    --color-on-secondary: var(--color-dark-on-secondary);
-    --color-on-success: var(--color-dark-on-success);
-
-    /* Accent gradient can also adapt */
-    --gradient-accent-start: var(--color-secondary);
-    --gradient-accent-end: var(--color-primary);
   }
 }
+*/
 
 /* Alinear variables existentes a los tokens semánticos */
 :root {
   --background: var(--color-background);
   --foreground: var(--color-text-primary);
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--color-background);
-    --foreground: var(--color-text-primary);
-  }
 }
 
 /* === Utilidades de tipografía === */

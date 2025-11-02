@@ -88,15 +88,18 @@ npm start      # Run production server
 
 **Global Tokens System** (`src/app/globals.css`):
 ```css
-/* CSS Custom Properties (automatically switch with prefers-color-scheme) */
+/* CSS Custom Properties - LIGHT THEME ALWAYS ACTIVE */
 --color-rojo-oficial: #c8102e;        /* Cruz Roja institutional red */
---color-background: #ffffff;           /* Light: white, Dark: #121212 */
---color-surface: #f8f8f8;              /* Light: off-white, Dark: #1e1e1e */
---color-text-primary: #333333;         /* Light: dark gray, Dark: white */
---color-text-secondary: #6e6e6e;       /* Light: medium gray, Dark: light gray */
---color-primary: #c8102e;              /* Brand red */
+--color-background: #ffffff;           /* White background */
+--color-surface: #f8f8f8;              /* Off-white surface (cards, sidebars) */
+--color-text-primary: #333333;         /* Dark gray text */
+--color-text-secondary: #6e6e6e;       /* Medium gray text */
+--color-primary: #c8102e;              /* Brand red (Cruz Roja) */
 --color-secondary: #007bff;            /* Blue for interactive elements */
---color-border: #dadada;               /* Subtle borders */
+--color-border: #dadada;               /* Light gray borders */
+--color-error: #c8102e;                /* Error state (Cruz Roja red) */
+--color-success: #2e7d32;              /* Success state (green) */
+--color-alert: #ffd700;                /* Alert/warning state (yellow) */
 --gradient-accent-start / --gradient-accent-end /* For AI demo gradient buttons */
 ```
 
@@ -142,8 +145,9 @@ npm start      # Run production server
 - **Grid layouts**: Most pages use CSS Grid (not Flexbox) for main layouts
 - **Responsive**: `@media (max-width: 900px)` breakpoint for mobile
 - **Spacing**: 16px/24px for padding/gaps (consistent across files)
-- **Dark mode**: Automatic via `prefers-color-scheme` - no manual toggle needed
+- **Dark mode**: DISABLED - Light theme is always active (dark mode media query commented out)
 - **Typography**: Use utility classes (`.text-h3`) in JSX or CSS variables in `.module.css`
+- **Color tokens**: Always use CSS variables (`var(--color-*)`) that reference light theme values
 
 **Common CSS Module Classes** (patterns repeated across pages):
 ```css

@@ -4,9 +4,9 @@ import React, { useMemo, useState, useEffect } from "react";
 import styles from "./page.module.css";
 
 function severityColor(sev) {
-  if (sev === "high") return "#E74C3C";
-  if (sev === "medium") return "#FFD166";
-  return "#2ECC71";
+  if (sev === "high") return "var(--color-error)";      // #C8102E (Cruz Roja red)
+  if (sev === "medium") return "var(--color-alert)";    // #FFD700 (yellow)
+  return "var(--color-success)";                        // #2E7D32 (green)
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -133,33 +133,33 @@ export default function AlertsPage() {
           <aside className={styles.sidebar} aria-label="Sidebar" aria-hidden={!sidebarOpen}>
             <div className={styles.brandBlock}>
               <div style={{ fontWeight: 800 }}>Cruz Roja Colombiana</div>
-              <div style={{ color: "#cfcfcf", fontSize: 12 }}>Soacha</div>
+              <div style={{ color: "var(--color-text-secondary)", fontSize: 12 }}>Soacha</div>
             </div>
 
 
             <div className={styles.levels}>
               <h3 style={{ margin: "6px 0 8px", fontSize: 14 }}>Niveles de alerta</h3>
               <div className={styles.levelItem}>
-                <span className={styles.levelDot} style={{ background: "#E74C3C" }} />
+                <span className={styles.levelDot} style={{ background: "var(--color-error)" }} />
                 <div>
                   <div style={{ fontWeight: 700 }}>Alto</div>
-                  <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones severas, riesgo inmediato a la vida y propiedades.</div>
+                  <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Inundaciones severas, riesgo inmediato a la vida y propiedades.</div>
                 </div>
               </div>
 
               <div className={styles.levelItem}>
-                <span className={styles.levelDot} style={{ background: "#FFD166" }} />
+                <span className={styles.levelDot} style={{ background: "var(--color-alert)" }} />
                 <div>
                   <div style={{ fontWeight: 700 }}>Medio</div>
-                  <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones locales, posible daño a infraestructura y servicios.</div>
+                  <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Inundaciones locales, posible daño a infraestructura y servicios.</div>
                 </div>
               </div>
 
               <div className={styles.levelItem}>
-                <span className={styles.levelDot} style={{ background: "#2ECC71" }} />
+                <span className={styles.levelDot} style={{ background: "var(--color-success)" }} />
                 <div>
                   <div style={{ fontWeight: 700 }}>Bajo</div>
-                  <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inconvenientes menores, seguimiento recomendado.</div>
+                  <div style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>Inconvenientes menores, seguimiento recomendado.</div>
                 </div>
               </div>
             </div>
@@ -170,9 +170,9 @@ export default function AlertsPage() {
           {/* Dark dashboard tiles: three wide cards with big centered report buttons */}
           <section className={styles.darkGrid} aria-label="Resumen de alertas por severidad">
         {[
-          { key: "high", label: "Severidad Alta", color: "#E74C3C", count: 0 },
-          { key: "medium", label: "Severidad Media", color: "#FFD166", count: 0 },
-          { key: "low", label: "Severidad Baja", color: "#2ECC71", count: 0 },
+          { key: "high", label: "Severidad Alta", color: "var(--color-error)", count: 0 },
+          { key: "medium", label: "Severidad Media", color: "var(--color-alert)", count: 0 },
+          { key: "low", label: "Severidad Baja", color: "var(--color-success)", count: 0 },
         ].map((tile) => (
           <article key={tile.key} className={styles.tile}>
             <div className={styles.tileHeader}>
@@ -185,7 +185,7 @@ export default function AlertsPage() {
                 onClick={() => addFloodReport(tile.key)}
                 aria-label={`Reportar inundación ${tile.label}`}
                 className={styles.reportBtn}
-                style={{ background: tile.color, color: tile.key === "medium" ? "#222" : "#fff" }}
+                style={{ background: tile.color, color: tile.key === "medium" ? "var(--color-text-primary)" : "var(--color-blanco)" }}
               >
                 <div style={{ fontSize: 36, marginBottom: 8 }}>
                   {tile.key === "high" ? (
