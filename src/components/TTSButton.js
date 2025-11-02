@@ -3,37 +3,44 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export default function TTSButton({ text = "", lang = "es-CO", label = "Leer alerta", small = false }) {
-  const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
-  const [voices, setVoices] = useState([]);
+  // Do not access `window` during render to avoid SSR/client markup mismatch.
+  const synthRef = useRef(null);
+  const [supported, setSupported] = useState(false); // initially false so server and initial client markup match
+  // voices list is stored in selectedVoiceRef; we avoid keeping an extra state to prevent unnecessary re-renders
   const [isSpeaking, setIsSpeaking] = useState(false);
   const selectedVoiceRef = useRef(null);
 
   useEffect(() => {
-    if (!synth) return;
+    if (typeof window === "undefined") return;
+    if (!("speechSynthesis" in window)) return;
+
+    synthRef.current = window.speechSynthesis;
+    setSupported(true);
 
     const load = () => {
-      const v = synth.getVoices() || [];
-      setVoices(v);
-      // prefer a voice matching the requested lang
+      const v = (synthRef.current && synthRef.current.getVoices()) || [];
       selectedVoiceRef.current = v.find((vv) => vv.lang && vv.lang.startsWith(lang)) || v[0] || null;
     };
 
     load();
-    synth.onvoiceschanged = load;
+    if (synthRef.current) synthRef.current.onvoiceschanged = load;
+
     return () => {
-      if (synth) synth.onvoiceschanged = null;
+      if (synthRef.current) synthRef.current.onvoiceschanged = null;
     };
-  }, [lang, synth]);
+  }, [lang]);
 
   useEffect(() => {
-    if (!synth) return;
-    const onEnd = () => setIsSpeaking(false);
+    if (typeof window === "undefined") return;
+    if (!("speechSynthesis" in window)) return;
 
+    const onEnd = () => setIsSpeaking(false);
     window.addEventListener("speechend", onEnd);
     return () => window.removeEventListener("speechend", onEnd);
-  }, [synth]);
+  }, []);
 
   const speak = () => {
+    const synth = synthRef.current;
     if (!synth) {
       alert("Text-to-speech no disponible en este navegador.");
       return;
@@ -55,12 +62,14 @@ export default function TTSButton({ text = "", lang = "es-CO", label = "Leer ale
   };
 
   const stop = () => {
+    const synth = synthRef.current;
     if (!synth) return;
     synth.cancel();
     setIsSpeaking(false);
   };
 
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+  // Render a disabled button by default (server and initial client render will match).
+  if (!supported) {
     return (
       <button className={small ? "btn" : "btn btn-ghost"} disabled title="TTS no disponible">
         {label}

@@ -312,7 +312,6 @@ export default function AlertsPage() {
             <h2 className="text-h5" style={{ marginBottom: 16 }}>
               🔔 Configurar Notificaciones Push
             </h2>
-            <PushNotifications />
           </section>
           </main>
         </div>
