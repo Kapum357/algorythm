@@ -2,7 +2,6 @@
 
 import styles from "./page.module.css";
 
-// eslint-disable-next-line no-unused-vars
 function _LineChart({ points, color = "var(--color-secondary)" }) {
   const width = 720;
   const height = 120;
