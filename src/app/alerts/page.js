@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import styles from "./page.module.css";
 import TTSButton from "../../components/TTSButton";
-import PushNotifications from "@/components/PushNotifications";
+import PushNotifications from "../../components/PushNotifications";
 
 function severityColor(sev) {
   if (sev === "high") return "var(--color-error)";      // #C8102E (Cruz Roja red)
@@ -31,6 +31,13 @@ function _LineChart({ points, color = "var(--color-secondary)" }) {
 export default function AlertsPage() {
   // simple alert state so the report buttons update counts
   const [alerts, setAlerts] = useState([]);
+  // Track which thresholds we've already notified to avoid duplicate sends
+  const [notified, setNotified] = useState({
+    high: false,
+    medium: false,
+    combined: false,
+    low: false,
+  });
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   function generateId() {
@@ -45,10 +52,34 @@ export default function AlertsPage() {
       date: new Date().toISOString(),
       status: "active",
     };
-    setAlerts((p) => [newAlert, ...p]);
-    
-    // Enviar notificación push
-    sendPushNotification(severity);
+    // Update alerts and check thresholds on the updated list
+    setAlerts((prev) => {
+      const next = [newAlert, ...prev];
+
+      // Compute counts
+      const high = next.filter((a) => a.severity === "high").length;
+      const medium = next.filter((a) => a.severity === "medium").length;
+      const low = next.filter((a) => a.severity === "low").length;
+      const combined = high + medium;
+
+      // Threshold logic (notify once per threshold)
+      if (!notified.high && high >= 5) {
+        sendPushNotification("high");
+        setNotified((s) => ({ ...s, high: true }));
+      } else if (!notified.medium && medium >= 5) {
+        sendPushNotification("medium");
+        setNotified((s) => ({ ...s, medium: true }));
+      } else if (!notified.combined && combined >= 5) {
+        // If combined red+yellow reaches threshold but individual counts didn't, send a medium alert
+        sendPushNotification("medium");
+        setNotified((s) => ({ ...s, combined: true }));
+      } else if (!notified.low && low >= 10) {
+        sendPushNotification("low");
+        setNotified((s) => ({ ...s, low: true }));
+      }
+
+      return next;
+    });
   }
 
   async function sendPushNotification(severity) {
@@ -314,44 +345,8 @@ export default function AlertsPage() {
             <h2 className="text-h5" style={{ marginBottom: 16 }}>
               🔔 Configurar Notificaciones Push
             </h2>
+            {/* Componente que maneja registro de service worker y suscripción push */}
             <PushNotifications />
-          </section>
-
-          {/* Sección de asistente de voz */}
-          <section style={{ marginTop: 32 }}>
-            <h2 className="text-h5" style={{ marginBottom: 16 }}>
-              🎤 Asistente de Voz
-            </h2>
-            <p className="text-body2" style={{ marginBottom: 16, color: "var(--color-text-secondary)" }}>
-              Pregunta sobre alertas, riesgos de inundación y protocolos de emergencia usando tu voz.
-            </p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
-              <a
-                href="/assistant"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "12px 24px",
-                  background: "var(--color-secondary)",
-                  color: "white",
-                  borderRadius: 24,
-                  textDecoration: "none",
-                  fontWeight: 700,
-                  transition: "all 0.2s",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = "var(--color-rojo-oficial)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = "var(--color-secondary)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                🎤 Activar Asistente de Voz
-              </a>
-            </div>
           </section>
           </main>
         </div>
