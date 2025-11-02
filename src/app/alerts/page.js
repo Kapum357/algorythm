@@ -91,9 +91,8 @@ export default function AlertsPage() {
 
   return (
     <div className={styles.page}>
-      {/* Simple top nav */}
-      <header className={styles.topNav}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button
             onClick={() => setSidebarOpen((s) => !s)}
             aria-label={sidebarOpen ? "Ocultar sidebar" : "Mostrar sidebar"}
@@ -106,18 +105,26 @@ export default function AlertsPage() {
             <span className="text-body1">Climate Resilience Tool</span>
           </div>
         </div>
-        <nav className={styles.navLinks} aria-label="Secondary">
-          <a href="/" className={styles.navItem}>Home</a>
-          <a href="/alerts" className={styles.navItem}>Alert System</a>
-          <a href="/impact" className={styles.navItem}>Data Analysis</a>
-          <a href="#" className={styles.navItem}>Reports</a>
-        </nav>
-      </header>
 
       {/* Title */}
       <section className={styles.titleBlock}>
-        <h1 className="text-h4">Alert System</h1>
-        <p className="text-body2">Predictive analysis of climate resilience in Soacha</p>
+        <h1 className="text-h4">🚨 Sistema de Alertas Climáticas - Soacha</h1>
+        <p className="text-body2">Monitoreo de condiciones meteorológicas y alertas preventivas para El Danubio y La María</p>
+        
+        <div className={styles.climateBanner}>
+          <div className={styles.bannerItem}>
+            <strong>🌊 Temporada Alta de Riesgo</strong>
+            <p>Marzo - Junio, Octubre - Noviembre</p>
+          </div>
+          <div className={styles.bannerItem}>
+            <strong>🌧️ Monitoreo IDEAM</strong>
+            <p>Integración conceptual con datos en tiempo real</p>
+          </div>
+          <div className={styles.bannerItem}>
+            <strong>📊 Histórico</strong>
+            <p>71% incidencia de inundaciones</p>
+          </div>
+        </div>
       </section>
 
       {/* Layout: sidebar + main content */}

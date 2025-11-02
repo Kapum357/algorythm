@@ -173,12 +173,98 @@
   font-size: 12px;
 }
 
+/* Nuevos estilos para impacto dinámico */
+.impactAlert {
+  background: linear-gradient(135deg, rgba(200, 16, 46, 0.1), rgba(200, 16, 46, 0.05));
+  border: 2px solid var(--color-rojo-oficial);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.impactAlert h3 {
+  color: var(--color-rojo-oficial);
+  margin-bottom: 16px;
+}
+
+.impactGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.impactStat {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.impactStat strong {
+  display: block;
+  font-size: 28px;
+  color: var(--color-rojo-oficial);
+  margin-bottom: 6px;
+}
+
+.impactStat span {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.vulnerability {
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.vulnerability strong {
+  color: var(--color-rojo-oficial);
+}
+
+.vulnGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.vulnCard {
+  padding: 20px;
+  background: var(--color-background);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.vulnPercent {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-rojo-oficial);
+  margin-bottom: 8px;
+}
+
+.vulnCard p {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
 @media (max-width: 900px) {
   .container {
     grid-template-columns: 1fr;
   }
 
   .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .impactGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vulnGrid {
     grid-template-columns: 1fr;
   }
 }
