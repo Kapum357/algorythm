@@ -52,9 +52,7 @@ export default function AlertsPage() {
     return { high, medium, low };
   }, [alerts]);
 
-  // Example points (normalized) for the two charts
-  const precip = [2, 10, 8, 3, 9, 2, 7, 3, 8, 2, 12, 3];
-  const temp = [6, 9, 7, 3, 5, 6, 12, 10, 2, 0.5, 8, 6];
+  // Note: Chart placeholder available via _LineChart; provide points from API if needed.
 
   return (
     <div className={styles.page}>
