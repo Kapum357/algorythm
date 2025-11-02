@@ -78,8 +78,53 @@ export default function AlertsPage() {
         <p className="text-body2">Predictive analysis of climate resilience in Soacha</p>
       </section>
 
-      {/* Dark dashboard tiles: three wide cards with big centered report buttons */}
-      <section className={styles.darkGrid} aria-label="Resumen de alertas por severidad">
+      {/* Layout: sidebar + main content */}
+      <div className={styles.layout}>
+        <aside className={styles.sidebar} aria-label="Sidebar">
+          <div className={styles.brandBlock}>
+            <div style={{ fontWeight: 800 }}>Cruz Roja Colombiana</div>
+            <div style={{ color: "#cfcfcf", fontSize: 12 }}>Soacha</div>
+          </div>
+
+          <nav className={styles.sideNav} aria-label="Main navigation">
+            <a href="#" className={styles.sideLink}>🏠 Inicio</a>
+            <a href="/alerts" className={styles.sideLink} style={{ fontWeight: 700 }}>🔔 Alertas</a>
+            <a href="#" className={styles.sideLink}>📊 Reportes</a>
+            <a href="#" className={styles.sideLink}>🔎 Análisis</a>
+            <a href="#" className={styles.sideLink}>🧭 Comunidades</a>
+          </nav>
+
+          <div className={styles.levels}>
+            <h3 style={{ margin: "6px 0 8px", fontSize: 14 }}>Niveles de alerta</h3>
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#E74C3C" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Alto</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones severas, riesgo inmediato a la vida y propiedades.</div>
+              </div>
+            </div>
+
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#FFD166" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Medio</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones locales, posible daño a infraestructura y servicios.</div>
+              </div>
+            </div>
+
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#2ECC71" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Bajo</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inconvenientes menores, seguimiento recomendado.</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <main className={styles.main}>
+          {/* Dark dashboard tiles: three wide cards with big centered report buttons */}
+          <section className={styles.darkGrid} aria-label="Resumen de alertas por severidad">
         {[
           { key: "high", label: "Severidad Alta", color: "#E74C3C", count: 0 },
           { key: "medium", label: "Severidad Media", color: "#FFD166", count: 0 },
@@ -107,7 +152,9 @@ export default function AlertsPage() {
             </div>
           </article>
         ))}
-      </section>
+          </section>
+          </main>
+        </div>
     </div>
   );
 }

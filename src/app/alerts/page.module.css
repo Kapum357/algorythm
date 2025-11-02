@@ -180,3 +180,32 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Layout: sidebar + main */
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.sidebar {
+  padding: 18px;
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.brandBlock { margin-bottom: 12px; }
+
+.sideNav { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.sideLink { color: #e6e6e6; text-decoration: none; }
+
+.levels { margin-top: 8px; }
+.levelItem { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.levelDot { width: 14px; height: 14px; border-radius: 4px; margin-top: 4px; }
+
+.main { padding-left: 6px; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.03); }
+}
