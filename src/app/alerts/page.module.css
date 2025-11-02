@@ -30,7 +30,33 @@
 
 .titleBlock {
   display: grid;
-  gap: 6px;
+  gap: 16px;
+}
+
+.climateBanner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.bannerItem {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(200, 16, 46, 0.1), rgba(200, 16, 46, 0.05));
+  border: 1px solid rgba(200, 16, 46, 0.3);
+  border-radius: 12px;
+}
+
+.bannerItem strong {
+  display: block;
+  color: var(--color-rojo-oficial);
+  margin-bottom: 6px;
+}
+
+.bannerItem p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
 }
 
 .grid2 {

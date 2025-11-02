@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./page.module.css";
+import InteractiveMap from "@/components/InteractiveMap";
 
 export default function DashboardPrincipal() {
   return (
@@ -27,13 +28,16 @@ export default function DashboardPrincipal() {
         </header>
 
         <section className={styles.mapCard}>
-          <iframe
-            className={styles.map}
-            title="Mapa de Soacha"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3986.745019894008!2d-74.231!3d4.585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9ed3d8e5c7d1%3A0x9d63e8cb2e0b9b0a!2sSoacha%2C%20Cundinamarca!5e0!3m2!1ses!2sCO!4v1699999999999"
-            allowFullScreen
+          <InteractiveMap 
+            center={[4.5850, -74.2310]}
+            zoom={14}
+            height="500px"
+            activeLayers={{
+              floodRisk: true,
+              threats: true,
+              capacities: true,
+              communities: true
+            }}
           />
         </section>
 

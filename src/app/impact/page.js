@@ -1,100 +1,198 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./page.module.css";
+import InteractiveMap from "@/components/InteractiveMap";
 
-const neighborhoods = [
-  { name: "Neighborhood A", total: 3500, children: 900, seniors: 500 },
-  { name: "Neighborhood B", total: 2800, children: 750, seniors: 400 },
-  { name: "Neighborhood C", total: 2500, children: 600, seniors: 350 },
-  { name: "Neighborhood D", total: 2000, children: 500, seniors: 300 },
-  { name: "Neighborhood E", total: 1700, children: 450, seniors: 250 },
+// Datos reales de El Danubio y La María
+const communities = [
+  { 
+    name: "El Danubio", 
+    total: 3640, 
+    households: 910,
+    children: Math.round(3640 * 0.28), // 28% estimado menores de 15
+    seniors: Math.round(3640 * 0.08), // 8% estimado mayores de 65
+    vulnerabilities: {
+      noEvacuation: 62,
+      noSavings: 81,
+      foodInsecurity: 27,
+      floodIncidence: 71
+    }
+  },
+  { 
+    name: "La María", 
+    total: 1200, 
+    households: 470,
+    children: Math.round(1200 * 0.28),
+    seniors: Math.round(1200 * 0.08),
+    vulnerabilities: {
+      noEvacuation: 62,
+      noSavings: 81,
+      foodInsecurity: 27,
+      floodIncidence: 71
+    }
+  }
 ];
 
 export default function ImpactDashboard() {
-  const total = 12500;
-  const children = 3200;
-  const seniors = 1800;
+  const [impactCalculation, setImpactCalculation] = useState(null);
+
+  const total = communities.reduce((sum, c) => sum + c.total, 0);
+  const children = communities.reduce((sum, c) => sum + c.children, 0);
+  const seniors = communities.reduce((sum, c) => sum + c.seniors, 0);
+  const households = communities.reduce((sum, c) => sum + c.households, 0);
+
+  // Calcular impacto cuando se selecciona una zona
+  const handleZoneClick = (zone) => {
+    // keep the selected zone in the impact calculation only
+    
+    // Estimar población afectada basándose en el nivel de riesgo
+    const multiplier = zone.level === 'high' ? 0.85 : 
+                      zone.level === 'medium' ? 0.50 : 0.20;
+    
+    const affectedPopulation = Math.round(total * multiplier);
+    const affectedChildren = Math.round(children * multiplier);
+    const affectedSeniors = Math.round(seniors * multiplier);
+    const affectedHouseholds = Math.round(households * multiplier);
+
+    setImpactCalculation({
+      zone: zone.name,
+      level: zone.level,
+      population: affectedPopulation,
+      children: affectedChildren,
+      seniors: affectedSeniors,
+      households: affectedHouseholds,
+      vulnerability: zone.level === 'high' ? 'CRÍTICA' : 
+                    zone.level === 'medium' ? 'MODERADA' : 'BAJA'
+    });
+  };
 
   // simple sparkline heights scaled from mock values
-  const events = [9000, 10000, 11300, 12500];
-  const max = Math.max(...events);
+  // historic event series (kept for reference)
 
   return (
     <main className={styles.container}>
       {/* Sidebar with map and areas */}
       <aside className={styles.sidebar}>
         <div className={styles.mapThumb}>
-          <iframe
-            title="Soacha overview map"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=-74.35%2C4.48%2C-74.16%2C4.65&layer=mapnik&marker=4.585%2C-74.231"
+          <InteractiveMap 
+            center={[4.5850, -74.2310]}
+            zoom={13}
+            height="300px"
+            activeLayers={{
+              floodRisk: true,
+              threats: false,
+              capacities: false,
+              communities: true
+            }}
+            onZoneClick={handleZoneClick}
           />
         </div>
-        <h3 className="text-h6" style={{ marginTop: 12 }}>Risk Areas</h3>
+        <h3 className="text-h6" style={{ marginTop: 12 }}>Zonas de Riesgo</h3>
         <div className={styles.riskList}>
-          <div className={styles.riskItem}>Area 1: Flood Zone</div>
-          <div className={styles.riskItem}>Area 2: Landslide Risk</div>
-          <div className={styles.riskItem}>Area 3: Drought Prone</div>
+          <div className={styles.riskItem}>🔴 Río Bogotá - Margen Norte</div>
+          <div className={styles.riskItem}>🔴 Quebrada Tibanica</div>
+          <div className={styles.riskItem}>🟠 El Danubio Central</div>
+          <div className={styles.riskItem}>🟢 Zona Elevada</div>
         </div>
+        <p className="text-caption" style={{ marginTop: 12, color: 'var(--color-text-secondary)' }}>
+          Haz clic en una zona del mapa para calcular impacto poblacional
+        </p>
       </aside>
 
       <section className={styles.main}>
         {/* Title */}
         <header className={styles.titleWrap}>
           <div className={styles.titleRow}>
-            <h1 className="text-h3">Climate Impact Analysis in Soacha</h1>
+            <h1 className="text-h3">Análisis de Impacto Poblacional</h1>
           </div>
           <p className={`text-body2 ${styles.subtitle}`}>
-            Detailed analysis of climate resilience in Soacha, Colombia, focusing on population
-            impact and historical event comparison.
+            Análisis detallado de resiliencia climática en Soacha, enfocado en las comunidades 
+            El Danubio y La María. Población total: {total.toLocaleString()} habitantes en {households.toLocaleString()} hogares.
           </p>
         </header>
 
         {/* Top stats */}
         <div className={styles.statsGrid}>
           <article className={styles.statCard}>
-            <div className="text-caption">Total Population Affected</div>
+            <div className="text-caption">Población Total</div>
             <div className={styles.statValue}>{total.toLocaleString()}</div>
+            <div className="text-caption" style={{ marginTop: 4 }}>
+              {households.toLocaleString()} hogares
+            </div>
           </article>
           <article className={styles.statCard}>
-            <div className="text-caption">Children (0-14)</div>
+            <div className="text-caption">Menores de 15 años</div>
             <div className={styles.statValue}>{children.toLocaleString()}</div>
+            <div className="text-caption" style={{ marginTop: 4 }}>
+              {Math.round((children/total)*100)}% población
+            </div>
           </article>
           <article className={styles.statCard}>
-            <div className="text-caption">Seniors (65+)</div>
+            <div className="text-caption">Mayores de 65 años</div>
             <div className={styles.statValue}>{seniors.toLocaleString()}</div>
+            <div className="text-caption" style={{ marginTop: 4 }}>
+              {Math.round((seniors/total)*100)}% población
+            </div>
           </article>
         </div>
 
-        {/* Table by neighborhood */}
+        {/* Cálculo de impacto dinámico */}
+        {impactCalculation && (
+          <section className={styles.impactAlert}>
+            <h3 className="text-h5">📊 Estimación de Impacto: {impactCalculation.zone}</h3>
+            <div className={styles.impactGrid}>
+              <div className={styles.impactStat}>
+                <strong>{impactCalculation.population.toLocaleString()}</strong>
+                <span>personas afectadas</span>
+              </div>
+              <div className={styles.impactStat}>
+                <strong>{impactCalculation.households.toLocaleString()}</strong>
+                <span>hogares afectados</span>
+              </div>
+              <div className={styles.impactStat}>
+                <strong>{impactCalculation.children.toLocaleString()}</strong>
+                <span>menores afectados</span>
+              </div>
+              <div className={styles.impactStat}>
+                <strong>{impactCalculation.seniors.toLocaleString()}</strong>
+                <span>adultos mayores afectados</span>
+              </div>
+            </div>
+            <p className={styles.vulnerability}>
+              <strong>Vulnerabilidad:</strong> {impactCalculation.vulnerability}
+            </p>
+          </section>
+        )}
+
+        {/* Table by community */}
         <section className={styles.sectionCard} aria-labelledby="by-neighborhood">
           <div className={styles.sectionHeader}>
             <h2 id="by-neighborhood" className="text-h5">
-              Impact by Neighborhood
+              Desglose por Comunidad
             </h2>
           </div>
           <div className={styles.sectionBody}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Neighborhood</th>
-                  <th>Total Affected</th>
-                  <th>Children (0-14)</th>
-                  <th>Seniors (65+)</th>
+                  <th>Comunidad</th>
+                  <th>Población</th>
+                  <th>Hogares</th>
+                  <th>Menores</th>
+                  <th>Adultos Mayores</th>
                 </tr>
               </thead>
               <tbody>
-                {neighborhoods.map((n) => (
-                  <tr key={n.name}>
+                {communities.map((c) => (
+                  <tr key={c.name}>
                     <td>
-                      <a href="#" aria-label={`Open details for ${n.name}`}>
-                        {n.name}
-                      </a>
+                      <strong>{c.name}</strong>
                     </td>
-                    <td>{n.total.toLocaleString()}</td>
-                    <td>{n.children.toLocaleString()}</td>
-                    <td>{n.seniors.toLocaleString()}</td>
+                    <td>{c.total.toLocaleString()}</td>
+                    <td>{c.households.toLocaleString()}</td>
+                    <td>{c.children.toLocaleString()}</td>
+                    <td>{c.seniors.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -102,50 +200,38 @@ export default function ImpactDashboard() {
           </div>
         </section>
 
-        {/* Comparison */}
-        <section className={styles.sectionCard} aria-labelledby="historical-compare">
+        {/* Vulnerabilidades CRMC */}
+        <section className={styles.sectionCard} aria-labelledby="vulnerabilities">
           <div className={styles.sectionHeader}>
-            <h2 id="historical-compare" className="text-h5">
-              Historical Event Comparison
+            <h2 id="vulnerabilities" className="text-h5">
+              Vulnerabilidades Críticas (CRMC)
             </h2>
           </div>
-          <div className={`${styles.sectionBody} ${styles.compareWrap}`}>
-            <input
-              className={styles.chipInput}
-              placeholder="Search or filter historical events"
-              aria-label="Search historical events"
-            />
-
-            <div className={styles.kpiCard}>
-              <div>
-                <div className="text-caption">Population Impact Comparison</div>
-                <div className={styles.kpiValue}>
-                  {total.toLocaleString()}
-                  <span className={styles.trend}>
-                    2023 <span style={{ color: "var(--color-success, var(--color-info))" }}>+10%</span>
-                  </span>
-                </div>
+          <div className={styles.sectionBody}>
+            <div className={styles.vulnGrid}>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>62%</div>
+                <p>Sin conocimiento de protocolos de evacuación</p>
               </div>
-              <div>
-                <div className={styles.sparkline} role="img" aria-label="Bar chart of events">
-                  {events.map((v, i) => {
-                    const h = Math.max(8, Math.round((v / max) * 56));
-                    const isLast = i === events.length - 1;
-                    return (
-                      <span
-                        key={i}
-                        className={`${styles.bar} ${isLast ? "" : styles.dim}`}
-                        style={{ height: h }}
-                      />
-                    );
-                  })}
-                </div>
-                <div className={styles.footerTicks} aria-hidden>
-                  <span>Event 1</span>
-                  <span>Event 2</span>
-                  <span>Event 3</span>
-                  <span>2023</span>
-                </div>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>81%</div>
+                <p>Sin ahorros para emergencias</p>
+              </div>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>27%</div>
+                <p>Inseguridad alimentaria</p>
+              </div>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>71%</div>
+                <p>Incidencia de inundaciones</p>
+              </div>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>48%</div>
+                <p>Confianza en líderes comunitarios</p>
+              </div>
+              <div className={styles.vulnCard}>
+                <div className={styles.vulnPercent}>100%</div>
+                <p>Riesgo de inundación nivel D (muy alto)</p>
               </div>
             </div>
           </div>
