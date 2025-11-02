@@ -1,65 +1,106 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      {/* Header */}
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <span className={styles.brandIcon} aria-hidden>
+            ■
+          </span>
+          <span className="text-body1">Cruz Roja Colombiana</span>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <nav className={styles.nav} aria-label="Primary">
+          <a href="#" className={styles.navItem}>
+            Inicio
+          </a>
+          <a href="/dashboard" className={styles.navItem}>
+            Panel
+          </a>
+          <a href="#" className={styles.navItem}>
+            Mapas
+          </a>
+          <a href="/impact" className={styles.navItem}>
+            Impacto
+          </a>
+          <a href="/alerts" className={styles.navItem}>
+            Alertas
+          </a>
+          <a href="/reports" className={styles.navItem}>
+            Reportes
+          </a>
+          <a href="/monitoring" className={styles.navItem}>
+            Monitoreo
+          </a>
+          <a href="#" className={styles.navItem}>
+            Recursos
+          </a>
+          <button className={styles.iconBtn} aria-label="Idioma o región">
+            🌐
+          </button>
+          <div className={styles.avatar} aria-hidden />
+        </nav>
+      </header>
+
+      {/* Content */}
+      <main className={styles.content}>
+        {/* Sidebar */}
+        <aside className={styles.sidebar}>
+          <section className={styles.section}>
+            <h2 className="text-h5">Capas</h2>
+            <label className={styles.checkboxRow}>
+              <input type="checkbox" /> Riesgo de inundación
+            </label>
+            <label className={styles.checkboxRow}>
+              <input type="checkbox" /> Puntos de amenaza
+            </label>
+            <label className={styles.checkboxRow}>
+              <input type="checkbox" /> Capacidades locales
+            </label>
+          </section>
+
+          <section className={styles.section}>
+            <h2 className="text-h5">Filtros</h2>
+            <div className={styles.selectWrap}>
+              <select aria-label="Filtro 1">
+                <option>Seleccionar</option>
+                <option>Localidad</option>
+                <option>Barrio</option>
+              </select>
+            </div>
+            <div className={styles.selectWrap}>
+              <select aria-label="Filtro 2">
+                <option>Seleccionar</option>
+                <option>Riesgo alto</option>
+                <option>Riesgo medio</option>
+                <option>Riesgo bajo</option>
+              </select>
+            </div>
+          </section>
+        </aside>
+
+        {/* Main area */}
+        <section className={styles.main}>
+          <div className={styles.mapCard}>
+            <iframe
+              className={styles.map}
+              title="Mapa de Bogotá y Soacha"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3986.745019894008!2d-74.231!3d4.585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9ed3d8e5c7d1%3A0x9d63e8cb2e0b9b0a!2sSoacha%2C%20Cundinamarca!5e0!3m2!1ses!2sCO!4v1699999999999"
+              allowFullScreen
             />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          </div>
+
+          <div className={styles.photoCard} aria-label="Panorámica de zona rural">
+            <div className={styles.photoPlaceholder}>
+              <span className="text-body2">Panorámica de paisaje rural</span>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );

@@ -1,6 +1,6 @@
 ---
 description: 'Plataforma Geoespacial para la Resiliencia Climática Urbana en Soacha'
-tools: []
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'upstash/context7/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'mermaidchart.vscode-mermaid-chart/get_syntax_docs', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-validator', 'mermaidchart.vscode-mermaid-chart/mermaid-diagram-preview', 'ms-vscode.vscode-websearchforcopilot/websearch', 'extensions', 'todos']
 ---
 
 1. Introducción y Planteamiento Estratégico de la Solución
