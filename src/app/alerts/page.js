@@ -1,7 +1,15 @@
 "use client";
 
+import React, { useMemo, useState } from "react";
 import styles from "./page.module.css";
 
+function severityColor(sev) {
+  if (sev === "high") return "#E74C3C";
+  if (sev === "medium") return "#FFD166";
+  return "#2ECC71";
+}
+
+// eslint-disable-next-line no-unused-vars
 function _LineChart({ points, color = "var(--color-secondary)" }) {
   const width = 720;
   const height = 120;
@@ -19,6 +27,31 @@ function _LineChart({ points, color = "var(--color-secondary)" }) {
 }
 
 export default function AlertsPage() {
+  // simple alert state so the report buttons update counts
+  const [alerts, setAlerts] = useState([]);
+
+  function generateId() {
+    return `A-${Date.now().toString().slice(-6)}`;
+  }
+
+  function addFloodReport(severity) {
+    const newAlert = {
+      id: generateId(),
+      title: "Inundación reportada",
+      severity,
+      date: new Date().toISOString(),
+      status: "active",
+    };
+    setAlerts((p) => [newAlert, ...p]);
+  }
+
+  const counts = useMemo(() => {
+    const high = alerts.filter((a) => a.severity === "high").length;
+    const medium = alerts.filter((a) => a.severity === "medium").length;
+    const low = alerts.filter((a) => a.severity === "low").length;
+    return { high, medium, low };
+  }, [alerts]);
+
   // Example points (normalized) for the two charts
   const precip = [2, 10, 8, 3, 9, 2, 7, 3, 8, 2, 12, 3];
   const temp = [6, 9, 7, 3, 5, 6, 12, 10, 2, 0.5, 8, 6];
@@ -45,67 +78,83 @@ export default function AlertsPage() {
         <p className="text-body2">Predictive analysis of climate resilience in Soacha</p>
       </section>
 
-      {/* Current Alerts */}
-      <section className={styles.grid2}>
-        <article className={styles.card} aria-labelledby="current-alerts">
-          <div className={styles.cardHeader}>
-            <h2 id="current-alerts" className="text-h6">Current Alerts</h2>
+      {/* Layout: sidebar + main content */}
+      <div className={styles.layout}>
+        <aside className={styles.sidebar} aria-label="Sidebar">
+          <div className={styles.brandBlock}>
+            <div style={{ fontWeight: 800 }}>Cruz Roja Colombiana</div>
+            <div style={{ color: "#cfcfcf", fontSize: 12 }}>Soacha</div>
           </div>
-          <div className={styles.cardBody}>
-            <p className="text-h6">High Precipitation Alert</p>
-            <p className="text-body2" style={{ marginTop: 4 }}>
-              Moderate risk of flooding in low-lying areas. Take precautions.
-            </p>
-          </div>
-        </article>
-        <div>
-          <img
-            className={styles.photo}
-            alt="Flooded street in a neighborhood"
-            src="https://images.unsplash.com/photo-1601905394887-05e2e4fe89a1?q=80&w=1200&auto=format&fit=crop"
-          />
-        </div>
-      </section>
 
-      {/* Predictive Analysis */}
-      <section>
-        <h2 className="text-h6">Predictive Analysis</h2>
-        <div className={styles.tabs}>
-          <div className={styles.pill} aria-current="page">Precipitation</div>
-          <div className={styles.pill} role="button" tabIndex={0}>Temperature</div>
-        </div>
-        <div className={styles.ranges}>
-          <div className={styles.range}>24 Hours</div>
-          <div className={styles.range} aria-current="true">48 Hours</div>
-          <div className={styles.range}>72 Hours</div>
-        </div>
+          <nav className={styles.sideNav} aria-label="Main navigation">
+            <a href="#" className={styles.sideLink}>🏠 Inicio</a>
+            <a href="/alerts" className={styles.sideLink} style={{ fontWeight: 700 }}>🔔 Alertas</a>
+            <a href="#" className={styles.sideLink}>📊 Reportes</a>
+            <a href="#" className={styles.sideLink}>🔎 Análisis</a>
+            <a href="#" className={styles.sideLink}>🧭 Comunidades</a>
+          </nav>
 
-        {/* Precipitation card */}
-        <div className={styles.forecastCard}>
-          <div className="text-caption">Precipitation Forecast</div>
-          <div className={styles.kpi}>
-            <div className={styles.kpiValue}>15mm</div>
-            <span className="text-caption">Next 48 Hours <span style={{ color: "var(--color-info)" }}>+10%</span></span>
-          </div>
-          <_LineChart points={precip} />
-          <div className={styles.axis} aria-hidden>
-            <span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span><span>30h</span><span>36h</span>
-          </div>
-        </div>
+          <div className={styles.levels}>
+            <h3 style={{ margin: "6px 0 8px", fontSize: 14 }}>Niveles de alerta</h3>
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#E74C3C" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Alto</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones severas, riesgo inmediato a la vida y propiedades.</div>
+              </div>
+            </div>
 
-        {/* Temperature card */}
-        <div className={styles.forecastCard} style={{ marginTop: 16 }}>
-          <div className="text-caption">Temperature Forecast</div>
-          <div className={styles.kpi}>
-            <div className={styles.kpiValue}>22°C</div>
-            <span className="text-caption">Next 48 Hours <span style={{ color: "var(--color-info)" }}>+2°C</span></span>
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#FFD166" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Medio</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inundaciones locales, posible daño a infraestructura y servicios.</div>
+              </div>
+            </div>
+
+            <div className={styles.levelItem}>
+              <span className={styles.levelDot} style={{ background: "#2ECC71" }} />
+              <div>
+                <div style={{ fontWeight: 700 }}>Bajo</div>
+                <div style={{ fontSize: 12, color: "#9b9b9b" }}>Inconvenientes menores, seguimiento recomendado.</div>
+              </div>
+            </div>
           </div>
-          <_LineChart points={temp} color="var(--color-primary)" />
-          <div className={styles.axis} aria-hidden>
-            <span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>24h</span><span>30h</span><span>36h</span>
-          </div>
+        </aside>
+
+        <main className={styles.main}>
+          {/* Dark dashboard tiles: three wide cards with big centered report buttons */}
+          <section className={styles.darkGrid} aria-label="Resumen de alertas por severidad">
+        {[
+          { key: "high", label: "Severidad Alta", color: "#E74C3C", count: 0 },
+          { key: "medium", label: "Severidad Media", color: "#FFD166", count: 0 },
+          { key: "low", label: "Severidad Baja", color: "#2ECC71", count: 0 },
+        ].map((tile) => (
+          <article key={tile.key} className={styles.tile}>
+            <div className={styles.tileHeader}>
+              <div className={styles.tileLabel}>{tile.label}</div>
+              <div className={styles.tileCount} style={{ color: severityColor(tile.key) }}>{counts[tile.key]}</div>
+            </div>
+
+            <div className={styles.reportWrap}>
+              <button
+                onClick={() => addFloodReport(tile.key)}
+                aria-label={`Reportar inundación ${tile.label}`}
+                className={styles.reportBtn}
+                style={{ background: tile.color, color: tile.key === "medium" ? "#222" : "#fff" }}
+              >
+                <div style={{ fontSize: 36, marginBottom: 8 }}>{tile.key === "high" ? "🔴" : tile.key === "medium" ? "🟡" : "🟢"}</div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontWeight: 800 }}>Reportar</div>
+                  <div style={{ fontWeight: 900 }}>{tile.key === "high" ? "Alto" : tile.key === "medium" ? "Medio" : "Bajo"}</div>
+                </div>
+              </button>
+            </div>
+          </article>
+        ))}
+          </section>
+          </main>
         </div>
-      </section>
     </div>
   );
 }
