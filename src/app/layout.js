@@ -35,8 +35,9 @@ export default function RootLayout({ children }) {
           <nav aria-label="Primary navigation">
             <a href="/" style={{ color: "#cfcfcf", marginRight: 14 }}>Inicio</a>
             <a href="/dashboard" style={{ color: "#cfcfcf", marginRight: 14 }}>Panel</a>
-            <a href="/reports" style={{ color: "#cfcfcf", marginRight: 14, fontWeight: 700 }}>Reportes</a>
-            <a href="/monitoring" style={{ color: "#cfcfcf" }}>Monitoreo</a>
+            <a href="/reports" style={{ color: "#cfcfcf", marginRight: 14 }}>Reportes</a>
+            <a href="/monitoring" style={{ color: "#cfcfcf", marginRight: 14 }}>Monitoreo</a>
+            <a href="/ai-demo" style={{ color: "#cfcfcf", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "4px 12px", borderRadius: "4px" }}>🤖 AI Demo</a>
           </nav>
         </header>
         {children}

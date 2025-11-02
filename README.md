@@ -17,3 +17,67 @@ El desafío consiste en desarrollar un prototipo funcional (web, dashboard o apl
 ------------------------
 
 \- Prototipo funcional o demo navegable (mapa interactivo, dashboard, app o sistema web).- Pitch de 5.- Descripción técnica del modelo de datos, herramientas utilizadas y posibles integraciones con sistemas institucionales.
+
+---
+
+## 🤖 Integración de IA con Ollama Cloud
+
+Este proyecto ahora incluye **capacidades de Inteligencia Artificial** mediante **Ollama Cloud** para potenciar el análisis de resiliencia climática:
+
+### ✨ Nuevas Funcionalidades AI
+
+- **🔍 Análisis Automático de Vulnerabilidades** - Procesa datos CRMC/AVCA y genera insights accionables
+- **🌊 Evaluación Inteligente de Riesgo de Inundación** - Análisis contextual por ubicación
+- **🚨 Generación de Planes de Emergencia** - Recomendaciones personalizadas para incidentes
+- **📊 Predicción de Patrones de Riesgo** - Identifica períodos críticos basándose en datos históricos
+
+### 🚀 Inicio Rápido con IA
+
+1. **Configura tu API Key de Ollama**:
+
+   ```bash
+   # Crea .env.local y agrega:
+   OLLAMA_API_KEY=tu_api_key_aqui
+   ```
+
+   Obtén tu API key en: [ollama.com/settings/keys](https://ollama.com/settings/keys)
+
+2. **Ejecuta el proyecto**:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. **Prueba la demo interactiva**:
+   - Visita: [http://localhost:3000/ai-demo](http://localhost:3000/ai-demo)
+   - Prueba los 3 casos de uso principales de IA
+
+### 📚 Documentación Completa
+
+- **[README de Ollama](./README_OLLAMA.md)** - Visión general y características
+- **[Guía de Configuración](./docs/OLLAMA_SETUP.md)** - Setup paso a paso
+- **[Ejemplos de Código](./docs/OLLAMA_EXAMPLES.md)** - Casos de uso prácticos
+- **[Quick Start](./docs/QUICKSTART.md)** - Inicio rápido en 5 minutos
+
+### 🛠️ Stack Tecnológico AI
+
+- **Ollama Cloud**: Modelos gpt-oss:120b-cloud y glm-4.6:cloud
+- **Next.js 16 API Routes**: Endpoints RESTful para servicios de IA
+- **React 19**: Interfaz interactiva y componentes reutilizables
+- **OpenStreetMap + Leaflet**: Visualización geoespacial
+
+### 🎯 Impacto
+
+La integración de IA transforma DIR-Soacha de una herramienta de visualización a una **plataforma inteligente de gestión de resiliencia** que:
+
+✅ Reduce el tiempo de análisis de vulnerabilidades de horas a minutos  
+✅ Genera recomendaciones contextualizadas basadas en datos locales  
+✅ Permite anticipar riesgos en lugar de solo reaccionar a emergencias  
+✅ Empodera a líderes comunitarios con insights accionables
+
+---
+
+## 📞 Soporte
+
+Para preguntas sobre la integración de IA: consulta la [documentación](./docs/) o abre un issue en GitHub.
