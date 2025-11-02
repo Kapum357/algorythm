@@ -160,6 +160,22 @@
   align-items: center;
 }
 
+.lottieWrap {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svgWrap {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .reportBtn {
   width: 100%;
   height: 180px;
@@ -209,16 +225,18 @@
 
 .main { padding-left: 6px; }
 
-.toggleBtn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.06);
-  color: #fff;
-  padding: 6px 8px;
-  border-radius: 6px;
+.reportBtn {
+  width: 100%;
+  height: 240px;
+  min-height: 220px;
+  border-radius: 12px;
+  border: none;
   cursor: pointer;
-}
-
-@media (max-width: 900px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  font-weight: 900;
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }

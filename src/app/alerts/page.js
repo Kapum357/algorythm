@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import styles from "./page.module.css";
 
 function severityColor(sev) {
@@ -56,6 +56,40 @@ export default function AlertsPage() {
   // Example points (normalized) for the two charts
   const precip = [2, 10, 8, 3, 9, 2, 7, 3, 8, 2, 12, 3];
   const temp = [6, 9, 7, 3, 5, 6, 12, 10, 2, 0.5, 8, 6];
+
+  // Load the lottie-player web component (LottieFiles player) dynamically on client
+  const [lottieReady, setLottieReady] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // If already defined, mark ready
+    if (window.customElements && window.customElements.get && window.customElements.get("lottie-player")) {
+      setLottieReady(true);
+      return;
+    }
+
+    // only add the script once
+    let script = document.querySelector('script[data-lottie-player]');
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js";
+      script.async = true;
+      script.setAttribute("data-lottie-player", "true");
+      document.body.appendChild(script);
+    }
+
+    // Wait until the component is defined
+    const whenDefined = window.customElements && window.customElements.whenDefined;
+    if (whenDefined) {
+      window.customElements
+        .whenDefined("lottie-player")
+        .then(() => setLottieReady(true))
+        .catch(() => setLottieReady(false));
+    } else {
+      // fallback: assume it will be ready shortly
+      const t = setTimeout(() => setLottieReady(!!window.customElements && !!window.customElements.get("lottie-player")), 700);
+      return () => clearTimeout(t);
+    }
+  }, []);
 
   return (
     <div className={styles.page}>
@@ -148,7 +182,65 @@ export default function AlertsPage() {
                 className={styles.reportBtn}
                 style={{ background: tile.color, color: tile.key === "medium" ? "#222" : "#fff" }}
               >
-                <div style={{ fontSize: 36, marginBottom: 8 }}>{tile.key === "high" ? "🔴" : tile.key === "medium" ? "🟡" : "🟢"}</div>
+                <div style={{ fontSize: 36, marginBottom: 8 }}>
+                  {tile.key === "high" ? (
+                    // High severity: use the provided Weather-storm Lottie animation with SVG fallback
+                    <div className={styles.lottieWrap}>
+                      {lottieReady ? (
+                        <lottie-player
+                          src="/animations/Weather-storm.json"
+                          background="transparent"
+                          speed="1"
+                          style={{ width: 140, height: 140 }}
+                          loop
+                          autoplay
+                          aria-label="storm animation"
+                        />
+                      ) : (
+                        <div className={styles.svgWrap}>
+                          <img src="/vectorized.svg" alt="icon severidad alta" width={80} height={80} />
+                        </div>
+                      )}
+                    </div>
+                  ) : tile.key === "medium" ? (
+                    // Medium severity: Rainy animation
+                    <div className={styles.lottieWrap}>
+                      {lottieReady ? (
+                        <lottie-player
+                          src="/animations/Rainy.json"
+                          background="transparent"
+                          speed="1"
+                          style={{ width: 140, height: 140 }}
+                          loop
+                          autoplay
+                          aria-label="rain animation"
+                        />
+                      ) : (
+                        // graceful fallback until player is ready
+                        "🟡"
+                      )}
+                    </div>
+                  ) : (
+                    // For the low severity tile render the Lottie animation if available.
+                    // Place your Lottie JSON at: public/animations/Weather-partly-shower.json
+                    <div className={styles.lottieWrap}>
+                      {lottieReady ? (
+                        <lottie-player
+                          src="/animations/Weather-partly-shower.json"
+                          background="transparent"
+                          speed="1"
+                          style={{ width: 140, height: 140 }}
+                          loop
+                          autoplay
+                          aria-label="weather animation"
+                        />
+                      ) : (
+                        // graceful fallback until player is ready
+                        "🟢"
+                      )}
+                    </div>
+                  )}
+                </div>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontWeight: 800 }}>Reportar</div>
                   <div style={{ fontWeight: 900 }}>{tile.key === "high" ? "Alto" : tile.key === "medium" ? "Medio" : "Bajo"}</div>
