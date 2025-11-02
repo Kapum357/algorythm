@@ -25,19 +25,19 @@ export default function RootLayout({ children }) {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "12px 20px",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
-          background: "linear-gradient(90deg, rgba(10,10,10,0.6), rgba(0,0,0,0.4))",
-          color: "#fff",
+          borderBottom: "1px solid var(--color-border)",
+          background: "var(--color-surface)",
+          color: "var(--color-text-primary)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span style={{ fontWeight: 800, fontSize: 16 }}>Cruz Roja Colombiana</span>
           </div>
           <nav aria-label="Primary navigation">
-            <a href="/" style={{ color: "#cfcfcf", marginRight: 14 }}>Inicio</a>
-            <a href="/dashboard" style={{ color: "#cfcfcf", marginRight: 14 }}>Panel</a>
-            <a href="/reports" style={{ color: "#cfcfcf", marginRight: 14 }}>Reportes</a>
-            <a href="/monitoring" style={{ color: "#cfcfcf", marginRight: 14 }}>Monitoreo</a>
-            <a href="/ai-demo" style={{ color: "#cfcfcf", background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", padding: "4px 12px", borderRadius: "4px" }}>🤖 AI Demo</a>
+            <a href="/" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Inicio</a>
+            <a href="/dashboard" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Panel</a>
+            <a href="/reports" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Reportes</a>
+            <a href="/monitoring" style={{ color: "var(--color-text-secondary)", marginRight: 14 }}>Monitoreo</a>
+            <a href="/ai-demo" style={{ color: "var(--color-on-primary)", background: "linear-gradient(135deg, var(--gradient-accent-start) 0%, var(--gradient-accent-end) 100%)", padding: "4px 12px", borderRadius: "4px" }}>🤖 AI Demo</a>
           </nav>
         </header>
         {children}
